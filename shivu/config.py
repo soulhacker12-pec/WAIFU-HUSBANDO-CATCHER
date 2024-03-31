@@ -7,7 +7,7 @@ class Config(object):
     GROUP_ID = -1002095006471
     TOKEN = "6956301291:AAE6amoBvaKj9Dc1Kaz8bXFjdbqQNKvI194"
     mongo_url = "mongodb+srv://xjie276:sUF$e7pzitFXCGH@cluster0.ecfztel.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    PHOTO_URL = ["https://telegra.ph/file/b925c3985f0f325e62e17.jpg", "https://telegra.ph/file/4211fb191383d895dab9d.jpg"]
+    PHOTO_URL = ["https://te.legra.ph/file/0d1c4aa40dcdce4552084.jpg", "https://telegra.ph/file/4211fb191383d895dab9d.jpg"]
     SUPPORT_CHAT = "zekauu"
     UPDATE_CHAT = "zekauu"
     BOT_USERNAME = "TheGreatLevi2Robot"
