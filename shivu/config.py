@@ -4,12 +4,12 @@ class Config(object):
     # Get this value from my.telegram.org/apps
     OWNER_ID = "6783092268"
     sudo_users = "6783092268"
-    GROUP_ID = -1002095006471
-    TOKEN = "6956301291:AAE6amoBvaKj9Dc1Kaz8bXFjdbqQNKvI194"
+    GROUP_ID = -1002073720399
+    TOKEN = "6802425596:AAEN6NJCn_1y49lOLf8l07vfpjVQXtbIAo0"
     mongo_url = "mongodb+srv://xjie276:sUF$e7pzitFXCGH@cluster0.ecfztel.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     PHOTO_URL = ["https://te.legra.ph/file/0d1c4aa40dcdce4552084.jpg", "https://telegra.ph/file/4211fb191383d895dab9d.jpg"]
-    SUPPORT_CHAT = "zekauu"
-    UPDATE_CHAT = "zekauu"
+    SUPPORT_CHAT = "PokemonUniteGC"
+    UPDATE_CHAT = "PokemonUniteGC"
     BOT_USERNAME = "TheGreatLevi2Robot"
     CHARA_CHANNEL_ID = "-1002095006471"
     api_id = 28213805
