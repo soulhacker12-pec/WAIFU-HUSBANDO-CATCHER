@@ -7,7 +7,7 @@ class Config(object):
     GROUP_ID = -1002073720399
     TOKEN = "6802425596:AAEN6NJCn_1y49lOLf8l07vfpjVQXtbIAo0"
     mongo_url = "mongodb+srv://zhuofan21001:9Bpb5voEiKYcnUQm@cluster0.mibzqh9.mongodb.net/?retryWrites=true&w=majority"
-    PHOTO_URL = ["https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg"]]
+    PHOTO_URL = ["https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg","https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg"]
     SUPPORT_CHAT = "PokemonUniteGC"
     UPDATE_CHAT = "PokemonUniteGC"
     BOT_USERNAME = "graBxWaifuRobot"
