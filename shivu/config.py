@@ -10,8 +10,8 @@ class Config(object):
     PHOTO_URL = ["https://te.legra.ph/file/0d1c4aa40dcdce4552084.jpg", "https://telegra.ph/file/4211fb191383d895dab9d.jpg"]
     SUPPORT_CHAT = "PokemonUniteGC"
     UPDATE_CHAT = "PokemonUniteGC"
-    BOT_USERNAME = "TheGreatLevi2Robot"
-    CHARA_CHANNEL_ID = "-1002095006471"
+    BOT_USERNAME = "graBxWaifuRobot"
+    CHARA_CHANNEL_ID = "-1002111937813"
     api_id = 28213805
     api_hash = "8f80142dfef1a696bee7f6ab4f6ece34"
 
