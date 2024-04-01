@@ -41,19 +41,23 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
     
     current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
 
-    for anime, characters in current_grouped_characters.items():
-        border_symbol = "━"  # Customize your border symbol if desired
-        series_title = f"⥱ {anime} {len(characters)}/{await collection.count_documents({'anime': anime})}"
-        border_line  = border_symbol * len(series_title) 
+    border_symbol = "⚋"  # Customize your border symbol if desired
+    border_length = 20  # Set the desired length of the border
 
-        harem_message += f'\n{border_line}\n'  # Add top border
-        harem_message += f'<b>{series_title}</b>\n'
-        harem_message += f'{border_line}\n'  # Add border below title
+    for anime, characters in current_grouped_characters.items():
+        harem_message += f'\n<b>⥱ {anime} {len(characters)}/{await collection.count_documents({"anime": anime})}</b>\n'
 
         for character in characters:
-            count = character_counts[character['id']]  
-            harem_message += f"➥ {character['id']} | {character['name']} ×{count}\n"
+            count = character_counts[character['id']]
 
+            # Create the fixed-length line with spaces in the middle
+            line = border_symbol + " " * (border_length - 2) + border_symbol
+
+            harem_message += f'{line}\n'  # Add top border
+            harem_message += f"➥ {character['id']} | {character['name']} ×{count}\n"
+            harem_message += f'{line}\n'  # Add bottom border
+
+    # ... rest of your code ... 
     total_count = len(user['characters'])
     
     keyboard = [[InlineKeyboardButton(f"See Collection ({total_count})", switch_inline_query_current_chat=f"collection.{user_id}")]]
