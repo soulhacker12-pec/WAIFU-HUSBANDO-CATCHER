@@ -41,26 +41,15 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
     
     current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
 
-    border_symbol = "⚋" 
-    border_length = 20
-    max_title_length = 10
-
-    harem_message = f"<b>{escape(update.effective_user.first_name)}'s Harem - Page {page+1}/{total_pages}</b>\n"
-    current_characters = unique_characters[page*15:(page+1)*15]
-    current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
-
     for anime, characters in current_grouped_characters.items():
-        title_line = f'\n<b>⥱ {anime[:max_title_length]} {len(characters)}/{await collection.count_documents({"anime": anime})}</b>\n'
-        harem_message += title_line
+        harem_message += f'\n<b>{anime} {len(characters)}/{await collection.count_documents({"anime": anime})}</b>\n'
 
         for character in characters:
-            count = character_counts[character['id']]
-            line = border_symbol + " " * (border_length - 2) + border_symbol
-            harem_message += f'{line}\n'  
-            harem_message += f"➥ {character['id']} | {character['name']} ×{count}\n"
-            harem_message += f'{line}\n'  
+            
+            count = character_counts[character['id']]  
+            harem_message += f'{character["id"]} {character["name"]} ×{count}\n'
 
-    # ... rest of your code ... 
+
     total_count = len(user['characters'])
     
     keyboard = [[InlineKeyboardButton(f"See Collection ({total_count})", switch_inline_query_current_chat=f"collection.{user_id}")]]
