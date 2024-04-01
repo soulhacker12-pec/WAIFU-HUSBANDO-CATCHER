@@ -3,8 +3,7 @@ import time
 import random
 import re
 import asyncio
-from html import escape
-
+from html import escape 
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
@@ -55,7 +54,7 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
-            if last_user[chat_id]['count'] >= 500:
+            if last_user[chat_id]['count'] >= 10:
             
                 if user_id in warned_users and time.time() - warned_users[user_id] < 600:
                     return
@@ -101,7 +100,7 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     await context.bot.send_photo(
         chat_id=chat_id,
         photo=character['img_url'],
-        caption=f"***{characters[rarity][0]} ᴀ ᴡᴀɪғᴜ ʜᴀs ᴀᴘᴘᴇᴀʀᴇᴅ!\nᴀᴅᴅ ʜᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ʙʏ sᴇɴᴅɪɴɢ\n/grab ɴᴀᴍᴇ***",
+        caption=f"""ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴀᴘᴘᴇᴀʀᴇᴅ!\nᴀᴅᴅ ʜᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ʙʏ sᴇɴᴅɪɴɢ\n/grab ɴᴀᴍᴇ""",
         parse_mode='Markdown')
 
 
