@@ -46,10 +46,9 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         for character in characters:
             
-            count = character_counts[character['id']]
-            harem_message += f'\n⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋'
-            harem_message += f'\n➥ {character["id"]} | {character["name"]} ×{count}\n'
-            harem_message += f'\n⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋⚋'
+            count = character_counts[character['id']
+            harem_message += f'\n➥ <b>˹{character["id"]}˼</b> | {character["name"]} ×{count}\n'
+           
 
 
     total_count = len(user['characters'])
