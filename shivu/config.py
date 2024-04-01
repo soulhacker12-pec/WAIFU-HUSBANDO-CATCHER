@@ -9,7 +9,7 @@ class Config(object):
     mongo_url = "mongodb+srv://zhuofan21001:9Bpb5voEiKYcnUQm@cluster0.mibzqh9.mongodb.net/?retryWrites=true&w=majority"
     PHOTO_URL = ["https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg","https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg"]
     SUPPORT_CHAT = "PokemonUniteGC"
-    UPDATE_CHAT = "PokemonUniteGC"
+    UPDATE_CHAT = "chuTiyaSupport"
     BOT_USERNAME = "graBxWaifuRobot"
     CHARA_CHANNEL_ID = "-1002111937813"
     api_id = 28213805
