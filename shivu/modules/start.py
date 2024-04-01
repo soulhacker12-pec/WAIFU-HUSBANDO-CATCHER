@@ -47,8 +47,8 @@ async def start(update: Update, context: CallbackContext) -> None:
         
         keyboard = [
             [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ", url=f'http://t.me/{BOT_USERNAME}?startgroup=new')],
-            [InlineKeyboardButton("☯Sᴜᴘᴘᴏʀᴛ☯", url=f'https://t.me/{SUPPORT_CHAT}'),
-            InlineKeyboardButton("☄ᴜᴘᴅᴀᴛᴇs☄", url=f'https://t.me/{UPDATE_CHAT}')],
+            [InlineKeyboardButton("Sᴜᴘᴘᴏʀᴛ", url=f'https://t.me/{SUPPORT_CHAT}'),
+            InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url=f'https://t.me/{UPDATE_CHAT}')],
             [InlineKeyboardButton("ʜᴇʟᴘ", callback_data='help')],
        
         ]
@@ -109,8 +109,8 @@ async def button(update: Update, context: CallbackContext) -> None:
         
         keyboard = [
             [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ", url=f'http://t.me/{BOT_USERNAME}?startgroup=new')],
-            [InlineKeyboardButton("☯Sᴜᴘᴘᴏʀᴛ☯", url=f'https://t.me/{SUPPORT_CHAT}'),
-            InlineKeyboardButton("☄ᴜᴘᴅᴀᴛᴇs☄", url=f'https://t.me/{UPDATE_CHAT}')],
+            [InlineKeyboardButton("Sᴜᴘᴘᴏʀᴛ", url=f'https://t.me/{SUPPORT_CHAT}'),
+            InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url=f'https://t.me/{UPDATE_CHAT}')],
             [InlineKeyboardButton("ʜᴇʟᴘ", callback_data='help')],
            
         ]
