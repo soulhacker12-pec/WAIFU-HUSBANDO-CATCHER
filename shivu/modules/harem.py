@@ -41,21 +41,24 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
     
     current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
 
-    border_symbol = "⚋"  # Customize your border symbol if desired
-    border_length = 20  # Set the desired length of the border
+    border_symbol = "⚋" 
+    border_length = 20
+    max_title_length = 10
+
+    harem_message = f"<b>{escape(update.effective_user.first_name)}'s Harem - Page {page+1}/{total_pages}</b>\n"
+    current_characters = unique_characters[page*15:(page+1)*15]
+    current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
 
     for anime, characters in current_grouped_characters.items():
-        harem_message += f'\n<b>⥱ {anime} {len(characters)}/{await collection.count_documents({"anime": anime})}</b>\n'
+        title_line = f'\n<b>⥱ {anime[:max_title_length]} {len(characters)}/{await collection.count_documents({"anime": anime})}</b>\n'
+        harem_message += title_line
 
         for character in characters:
             count = character_counts[character['id']]
-
-            # Create the fixed-length line with spaces in the middle
             line = border_symbol + " " * (border_length - 2) + border_symbol
-
-            harem_message += f'{line}\n'  # Add top border
+            harem_message += f'{line}\n'  
             harem_message += f"➥ {character['id']} | {character['name']} ×{count}\n"
-            harem_message += f'{line}\n'  # Add bottom border
+            harem_message += f'{line}\n'  
 
     # ... rest of your code ... 
     total_count = len(user['characters'])
