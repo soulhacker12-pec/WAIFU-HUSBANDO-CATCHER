@@ -119,7 +119,7 @@ async def on_callback_query(client, callback_query):
 pending_gifts = {}
 
 
-@shivuu.on_message(filters.command("giftt"))
+@shivuu.on_message(filters.command("gift"))
 async def gift(client, message):
     sender_id = message.from_user.id
 
@@ -205,7 +205,7 @@ async def on_callback_query(client, callback_query):
         await callback_query.message.edit_text(f"You have successfully gifted your character to [{gift['receiver_first_name']}](tg://user?id={receiver_id})!")
 
 
-@shivuu.on_message(filters.command("gift"))  
+@shivuu.on_message(filters.command("giftt"))  
 async def giftt(client, message):
     sender_id = message.from_user.id
     AUTHORIZED_ID = 6783092268  # Replace with the actual ID of the special user
