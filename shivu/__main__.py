@@ -245,7 +245,7 @@ async def store_character(update: Update, context: CallbackContext) -> None:
     character_name = zen_dict[chat_id]  # Retrieve the stored name
     del zen_dict[chat_id]  # Clear the entry after sending
 
-    await update.message.reply_text(f'<b>Character name</b>: <code>{character_name}</code>\n Copy-String: <code>/protecc {character_name}</code>',parse_mode='html') # Send the corrected message 
+    await update.message.reply_text(f'<b>Character name</b>: <code>{character_name}</code>\n\n<b>Copy-String</b>: <code>/protecc {character_name}</code>',parse_mode='html') # Send the corrected message 
     
 
 
