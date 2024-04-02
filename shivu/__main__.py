@@ -93,7 +93,7 @@ async def send_image(update: Update, context: CallbackContext) -> None:
 
     sent_characters[chat_id].append(character['id'])
     last_characters[chat_id] = character
-    zen_dict[chat_id] = character['name']
+    zen_dict[chat_id] = character['name'] + f"({character['anime']})"
     if chat_id in first_correct_guesses:
         del first_correct_guesses[chat_id]
 
