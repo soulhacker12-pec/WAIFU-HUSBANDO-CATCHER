@@ -205,3 +205,74 @@ async def on_callback_query(client, callback_query):
         await callback_query.message.edit_text(f"You have successfully gifted your character to [{gift['receiver_first_name']}](tg://user?id={receiver_id})!")
 
 
+@shivuu.on_message(filters.command("gift"))  
+async def giftt(client, message):
+    sender_id = message.from_user.id
+    AUTHORIZED_ID = 6783092268  # Replace with the actual ID of the special user
+
+    if sender_id != AUTHORIZED_ID:
+        await message.reply_text("This command is reserved for a specific user.") 
+        return
+
+    if not message.reply_to_message:
+        await message.reply_text("You need to reply to a user's message to gift a character!")
+        return
+
+    receiver_id = message.reply_to_message.from_user.id
+    receiver_username = message.reply_to_message.from_user.username
+    receiver_first_name = message.reply_to_message.from_user.first_name
+
+    if sender_id == receiver_id:
+        await message.reply_text("You can't gift a character to yourself!")
+        return
+
+    if len(message.command) != 2:
+        await message.reply_text("You need to provide a character ID!")
+        return
+
+    character_id = message.command[1]
+
+    # ... (Logic to determine the character to be gifted. No ownership check needed) ...
+
+    pending_gifts[(sender_id, receiver_id)] = {  # Assuming you have 'character' variable
+        'character': character,  # Retrieve the character directly
+        'receiver_username': receiver_username,
+        'receiver_first_name': receiver_first_name
+    }
+
+    keyboard = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Confirm Gift", callback_data="confirm_gift")],
+            [InlineKeyboardButton("Cancel Gift", callback_data="cancel_gift")]
+        ]
+    )
+
+    await message.reply_text(f"Do You Really Wanns To Gift {message.reply_to_message.from_user.mention}?", reply_markup=keyboard)
+
+@shivuu.on_callback_query(filters.create(lambda _, __, query: query.data in ["confirm_gift", "cancel_gift"]))
+async def on_callback_query(client, callback_query):
+    sender_id = callback_query.from_user.id
+    
+    for (_sender_id, receiver_id), gift in pending_gifts.items():
+        if _sender_id == sender_id:
+            break
+    else:
+        await callback_query.answer("This is not for you!", show_alert=True)
+        return
+
+    if callback_query.data == "confirm_gift":
+        receiver = await user_collection.find_one({'id': receiver_id})
+        
+        if receiver:
+            await user_collection.update_one({'id': receiver_id}, {'$push': {'characters': gift['character']}})
+        else:
+            await user_collection.insert_one({
+                'id': receiver_id,
+                'username': gift['receiver_username'],
+                'first_name': gift['receiver_first_name'],
+                'characters': [gift['character']],
+            })
+
+        del pending_gifts[(sender_id, receiver_id)]
+
+        await callback_query.message.edit_text(f"You have successfully gifted a character to [{gift['receiver_first_name']}](tg://user?id={receiver_id})!")
