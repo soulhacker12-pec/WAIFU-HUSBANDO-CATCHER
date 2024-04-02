@@ -196,10 +196,14 @@ async def guess(update: Update, context: CallbackContext) -> None:
 
 
         await update.message.reply_text(f'<b><a href="tg://user?id={user_id}">{escape(update.effective_user.first_name)}</a></b> You Guessed a New Character ✅️ \n\n𝗡𝗔𝗠𝗘: <b>{last_characters[chat_id]["name"]}</b> \n𝗔𝗡𝗜𝗠𝗘: <b>{last_characters[chat_id]["anime"]}</b> \n𝗥𝗔𝗜𝗥𝗧𝗬: <b>{last_characters[chat_id]["rarity"]}</b>\n\nThis Character added in Your harem.. use /harem To see your harem', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard))
+        if chat_id in zen_dict:
+            del zen_dict[chat_id]  # Reset the channel after a correct guess
+
 
     else:
         await update.message.reply_text('Please Write Correct Character Name... ❌️')
    
+
 
 async def fav(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
@@ -230,6 +234,22 @@ async def fav(update: Update, context: CallbackContext) -> None:
     await user_collection.update_one({'id': user_id}, {'$set': {'favorites': user['favorites']}})
 
     await update.message.reply_text(f'Character {character["name"]} has been added to your favorite...')
+
+async def store_character(update: Update, context: CallbackContext) -> None:
+    chat_id = update.effective_chat.id
+
+    if chat_id not in zen_dict:
+        await update.message.reply_text('No character has spawned in this channel yet.')
+        return
+
+    character_name = zen_dict[chat_id]  
+    del zen_dict[chat_id]  
+
+    await s(update, character_name)  # Call the new function
+
+
+async def s(update: Update, character_name: str) -> None:
+    await update.message.reply_text(f'The special character for this channel is: {character_name}')
     
 
 
@@ -239,6 +259,7 @@ def main() -> None:
 
     application.add_handler(CommandHandler(["guess", "protecc", "collect", "grab", "hunt"], guess, block=False))
     application.add_handler(CommandHandler("fav", fav, block=False))
+    application.add_handler(CommandHandler("s", s, block=False))
     application.add_handler(MessageHandler(filters.ALL, message_counter, block=False))
 
     application.run_polling(drop_pending_updates=True)
