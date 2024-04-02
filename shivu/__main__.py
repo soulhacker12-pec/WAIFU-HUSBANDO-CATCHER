@@ -14,7 +14,7 @@ from shivu import collection, top_global_groups_collection, group_user_totals_co
 from shivu import application, SUPPORT_CHAT, UPDATE_CHAT, db, LOGGER
 from shivu.modules import ALL_MODULES
 
-
+zen_dict = {}  # Our dictionary to store channel ID and character name pairs
 locks = {}
 message_counters = {}
 spam_counters = {}
@@ -93,7 +93,7 @@ async def send_image(update: Update, context: CallbackContext) -> None:
 
     sent_characters[chat_id].append(character['id'])
     last_characters[chat_id] = character
-
+    zen_dict[chat_id] = character['name']
     if chat_id in first_correct_guesses:
         del first_correct_guesses[chat_id]
 
