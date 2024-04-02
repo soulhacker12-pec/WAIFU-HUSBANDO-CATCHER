@@ -242,14 +242,10 @@ async def store_character(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text('No character has spawned in this channel yet.')
         return
 
-    character_name = zen_dict[chat_id]  
-    del zen_dict[chat_id]  
+    character_name = zen_dict[chat_id]  # Retrieve the stored name
+    del zen_dict[chat_id]  # Clear the entry after sending
 
-    await s(update, character_name)  # Call the new function
-
-
-async def s(update: Update, character_name: str) -> None:
-    await update.message.reply_text(f'The special character for this channel is: {character_name}')
+    await update.message.reply_text(f'The special character for this channel is: {character_name}') # Send the corrected message 
     
 
 
@@ -259,7 +255,7 @@ def main() -> None:
 
     application.add_handler(CommandHandler(["guess", "protecc", "collect", "grab", "hunt"], guess, block=False))
     application.add_handler(CommandHandler("fav", fav, block=False))
-    application.add_handler(CommandHandler("s", s, block=False))
+    application.add_handler(CommandHandler("s", store_character, block=False))
     application.add_handler(MessageHandler(filters.ALL, message_counter, block=False))
 
     application.run_polling(drop_pending_updates=True)
