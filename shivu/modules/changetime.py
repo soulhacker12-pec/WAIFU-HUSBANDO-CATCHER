@@ -26,8 +26,8 @@ async def change_time(client: Client, message: Message):
             return
 
         new_frequency = int(args[1])
-        if new_frequency < 9:
-            await message.reply_text('The message frequency must be greater than or equal to 100.')
+        if new_frequency < 5:
+            await message.reply_text('The message frequency must be greater than or equal to 5.')
             return
 
     
@@ -38,6 +38,6 @@ async def change_time(client: Client, message: Message):
             return_document=ReturnDocument.AFTER
         )
 
-        await message.reply_text(f'Successfully changed {new_frequency}')
+        await message.reply_text(f'✅ Time changed!\nThe next character will be sent in {new_frequency} messages.')
     except Exception as e:
         await message.reply_text(f'Failed to change {str(e)}')
