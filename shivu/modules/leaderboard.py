@@ -51,7 +51,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     ])
     leaderboard_data = await cursor.to_list(length=10)
 
-    leaderboard_message = "<b>TOP 10 USERS WHO GUESSED CHARACTERS MOST TIME IN THIS GROUP..</b>\n\n┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓\n\n"
+    leaderboard_message = "<b>TOP 10 USERS WHO GUESSED CHARACTERS MOST TIME IN THIS GROUP..</b>\n\n┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓"
     
 
     for i, user in enumerate(leaderboard_data, start=1):
