@@ -4,12 +4,9 @@ import html
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram import Client
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
-from telegram import *
-from telegram.ext import *
 
 
 from shivu import shivuu
@@ -92,19 +89,7 @@ async def leaderboard(update: Update, context: CallbackContext) -> None:
     
     photo_url = random.choice(PHOTO_URL)
 
-    await update.message.reply_photo(photo=photo_url, caption=leaderboard_message, parse_mode='HTML',reply_markup=create_delete_button())
-
-def create_delete_button():
-    keyboard = [[InlineKeyboardButton("🚮", callback_data="delete_message")]]
-    return InlineKeyboardMarkup(keyboard)
-
-@client.on_callback_query(filters.regex("delete_message"))  
-async def delete_message_callback(client: Client, callback_query): 
-    await callback_query.answer() 
-
-    # Use Telegram Bot API methods directly (adjust parameters accordingly)
-    await client.delete_message(chat_id=callback_query.message.chat.id,
-                                message_id=callback_query.message.message_id) 
+    await update.message.reply_photo(photo=photo_url, caption=leaderboard_message, parse_mode='HTML')
 
 
 
