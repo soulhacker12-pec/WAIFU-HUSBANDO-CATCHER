@@ -38,6 +38,6 @@ async def change_time(client: Client, message: Message):
             return_document=ReturnDocument.AFTER
         )
 
-        await message.reply_text(f'✅<b> Time changed!\nThe next character will be sent in {new_frequency} messages.</b>',parse_mode='html')
+        await message.reply_text(f'✅*** Time changed!\nThe next character will be sent in {new_frequency} messages. ***',parse_mode='markdown')
     except Exception as e:
         await message.reply_text(f'Failed to change {str(e)}')
