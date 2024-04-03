@@ -4,7 +4,7 @@ import html
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.client import Client
+from pyrogram import Client
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
@@ -98,16 +98,13 @@ def create_delete_button():
     keyboard = [[InlineKeyboardButton("🚮", callback_data="delete_message")]]
     return InlineKeyboardMarkup(keyboard)
 
-# Assuming you have an initialized Pyrogram Client instance (`client`) somewhere in your code
-
-@client.on_callback_query(filters.regex("delete_message"))  # Pyrogram callback query handler
+@client.on_callback_query(filters.regex("delete_message"))  
 async def delete_message_callback(client: Client, callback_query): 
     await callback_query.answer() 
-    await callback_query.message.delete()
 
-    # Optional: Send a confirmation message 
-    await client.send_message(chat_id=callback_query.message.chat.id, text="Message deleted!") 
-
+    # Use Telegram Bot API methods directly (adjust parameters accordingly)
+    await client.delete_message(chat_id=callback_query.message.chat.id,
+                                message_id=callback_query.message.message_id) 
 
 
 
