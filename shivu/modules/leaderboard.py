@@ -41,9 +41,30 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
     
     photo_url = random.choice(PHOTO_URL)
 
-    await update.message.reply_photo(photo=photo_url, caption=u177, parse_mode='HTML')
+    # Setup inline buttons
+    keyboard = [[InlineKeyboardButton("Delete Message", callback_data='delete')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
+    # Send message with inline buttons
+    message = await update.message.reply_photo(photo=photo_url, caption=u177, parse_mode='HTML', reply_markup=reply_markup)
+    
+    # Store the message ID for later deletion
+    context.user_data['message_to_delete'] = message.message_id
 
+async def button(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    if query.data == 'delete':
+        # Delete the message using the stored message ID
+        message_to_delete = context.user_data.get('message_to_delete')
+        if message_to_delete:
+            try:
+                await context.bot.delete_message(chat_id=query.message.chat_id, message_id=message_to_delete)
+            except Exception as e:
+                print(f"Error deleting message: {e}")
+        else:
+            print()
+          
 async def ctop(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
 
@@ -114,8 +135,29 @@ async def leaderboard(update: Update, context: CallbackContext) -> None:
         u178 = leaderboard_message + f'┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛'
     photo_url = random.choice(PHOTO_URL)
 
-    await update.message.reply_photo(photo=photo_url, caption=u178, parse_mode='HTML')
+    # Setup inline buttons
+    keyboard = [[InlineKeyboardButton("Delete Message", callback_data='delete')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
+    # Send message with inline buttons
+    message = await update.message.reply_photo(photo=photo_url, caption=u178, parse_mode='HTML', reply_markup=reply_markup)
+    
+    # Store the message ID for later deletion
+    context.user_data['message_to_delete'] = message.message_id
+
+async def button(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    if query.data == 'delete':
+        # Delete the message using the stored message ID
+        message_to_delete = context.user_data.get('message_to_delete')
+        if message_to_delete:
+            try:
+                await context.bot.delete_message(chat_id=query.message.chat_id, message_id=message_to_delete)
+            except Exception as e:
+                print(f"Error deleting message: {e}")
+        else:
+            print()
 
 
 async def stats(update: Update, context: CallbackContext) -> None:
