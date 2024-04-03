@@ -77,6 +77,17 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     # Store the message ID for later deletion
     context.user_data['message_to_delete'] = message.message_id
 
+async def button(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    if query.data == 'delete':
+        # Delete the message using the stored message ID
+        message_to_delete = context.user_data.get('message_to_delete')
+        if message_to_delete:
+            await context.bot.delete_message(chat_id=query.message.chat_id, message_id=message_to_delete)
+        else:
+            await query.message.reply_text("Message to delete not found.")
+
 async def leaderboard(update: Update, context: CallbackContext) -> None:
     
     cursor = user_collection.aggregate([
@@ -165,4 +176,5 @@ application.add_handler(CommandHandler('groups', send_groups_document, block=Fal
 
 
 application.add_handler(CommandHandler('top', leaderboard, block=False))
+application.add_handler(CallbackQueryHandler(button))
 
