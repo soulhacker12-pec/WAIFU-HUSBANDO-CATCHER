@@ -52,6 +52,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     leaderboard_data = await cursor.to_list(length=10)
 
     leaderboard_message = "<b>TOP 10 USERS WHO GUESSED CHARACTERS MOST TIME IN THIS GROUP..</b>\n\n"
+  leaderboard_message += "┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓\n\n"
 
     for i, user in enumerate(leaderboard_data, start=1):
         username = user.get('username', 'Unknown')
@@ -60,8 +61,8 @@ async def ctop(update: Update, context: CallbackContext) -> None:
         if len(first_name) > 10:
             first_name = first_name[:15] + '...'
         character_count = user['character_count']
-        leaderboard_message += f'{i}. <a href="https://t.me/{username}"><b>{first_name}</b></a> ➾ <b>{character_count}</b>\n'
-    
+        leaderboard_message += f'┣ {i}. <a href="https://t.me/{username}"><b>{first_name}</b></a> ➾ <b>{character_count}</b>\n'
+        leaderboard_message += "┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛"
     photo_url = random.choice(PHOTO_URL)
 
     await update.message.reply_photo(photo=photo_url, caption=leaderboard_message , parse_mode='HTML', reply_markup=create_delete_button())
