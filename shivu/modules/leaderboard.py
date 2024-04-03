@@ -2,6 +2,9 @@ import os
 import random
 import html
 
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
