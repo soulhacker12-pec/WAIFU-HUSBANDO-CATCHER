@@ -97,14 +97,12 @@ def create_delete_button():
     keyboard = [[InlineKeyboardButton("🚮", callback_data="delete_message")]]
     return InlineKeyboardMarkup(keyboard)
 
-
-def delete_message_callback(update: Update, context: CallbackContext):
-    query = update.callback_query
-    query.answer()  
-    query.message.delete()
+async def delete_message_callback(client: Client, callback_query): # Use Client in Pyrogram
+    await callback_query.answer() 
+    await callback_query.message.delete()
 
     # Optional: Send a confirmation message 
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Message deleted!") 
+    await client.send_message(chat_id=callback_query.message.chat.id, text="Message deleted!") 
 
 
 
@@ -162,7 +160,6 @@ async def send_groups_document(update: Update, context: CallbackContext) -> None
         await context.bot.send_document(chat_id=update.effective_chat.id, document=f)
     os.remove('groups.txt')
 
-updater.dispatcher.add_handler(CallbackQueryHandler(delete_message_callback, pattern="delete_message"))
 application.add_handler(CommandHandler('ctop', ctop, block=False))
 application.add_handler(CommandHandler('stats', stats, block=False))
 application.add_handler(CommandHandler('TopGroups', global_leaderboard, block=False))
