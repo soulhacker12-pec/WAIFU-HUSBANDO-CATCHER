@@ -25,7 +25,7 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
     ])
     leaderboard_data = await cursor.to_list(length=10)
 
-    leaderboard_message = "<b> ˹ιтz˼ | ◈ 🌍 gℓσвαℓ ℓєα∂єявσαя∂</b>\n\n┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓\n"
+    leaderboard_message = "<b> ˹ιтz˼ | ◈ 🌍 gℓσвαℓ gяσυρ ℓєα∂єявσαя∂</b>\n\n┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓\n"
 
     for i, group in enumerate(leaderboard_data, start=1):
         group_name = html.escape(group.get('group_name', 'Unknown'))
