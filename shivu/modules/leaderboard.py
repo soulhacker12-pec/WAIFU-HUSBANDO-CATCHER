@@ -25,7 +25,7 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
     ])
     leaderboard_data = await cursor.to_list(length=10)
 
-    leaderboard_message = "<b> ˹ιтz˼ | ◈ 🌍 gℓσвαℓ ℓєα∂єявσαя∂</b>\n\n"
+    leaderboard_message = "<b> ˹ιтz˼ | ◈ 🌍 gℓσвαℓ ℓєα∂єявσαя∂</b>\n\n┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓\n"
 
     for i, group in enumerate(leaderboard_data, start=1):
         group_name = html.escape(group.get('group_name', 'Unknown'))
@@ -33,12 +33,12 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
         if len(group_name) > 10:
             group_name = group_name[:12] + '...'
         count = group['count']
-        leaderboard_message += f'┣{i}. <b>{group_name}</b> ➾ <b>{count}</b>\n'
-    
+        leaderboard_message += f'┣{i}. <b>{group_name}</b> ⇒ <code>{count}</code>\n'
+        u177 = leaderboard_message + f'┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛'
     
     photo_url = random.choice(PHOTO_URL)
 
-    await update.message.reply_photo(photo=photo_url, caption=leaderboard_message, parse_mode='HTML')
+    await update.message.reply_photo(photo=photo_url, caption=u177, parse_mode='HTML')
 
 async def ctop(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
