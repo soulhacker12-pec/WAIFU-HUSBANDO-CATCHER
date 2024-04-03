@@ -77,7 +77,7 @@ async def leaderboard(update: Update, context: CallbackContext) -> None:
     ])
     leaderboard_data = await cursor.to_list(length=10)
 
-    leaderboard_message = "<b>˹ιтz˼ | ◈ 🌍 gℓσвαℓ ℓєα∂єявσαя∂</b>\n\n┏━┅┅┄┄⟞⟦🌍⟧⟝┄┄┉┉━┓\n"
+    leaderboard_message = "<b>˹ιтz˼ | ◈ 🌍 gℓσвαℓ Rαηкєяѕ</b>\n\n┏━┅┅┄┄⟞⟦🌍⟧⟝┄┄┉┉━┓\n"
 
     for i, user in enumerate(leaderboard_data, start=1):
         username = user.get('username', 'Unknown')
