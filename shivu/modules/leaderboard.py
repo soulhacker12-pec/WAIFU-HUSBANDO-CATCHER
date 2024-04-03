@@ -62,10 +62,10 @@ async def ctop(update: Update, context: CallbackContext) -> None:
             first_name = first_name[:15] + '...'
         character_count = user['character_count']
         leaderboard_message += f'┣ {i}. <a href="https://t.me/{username}"><b>{first_name}</b></a> ➾ <b>{character_count}</b>\n'
-        leaderboard_message += f'┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛'
+        koka = leaderboard_message + f'\n\n┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛'
     photo_url = random.choice(PHOTO_URL)
 
-    await update.message.reply_photo(photo=photo_url, caption=leaderboard_message , parse_mode='HTML')
+    await update.message.reply_photo(photo=photo_url, caption=koka , parse_mode='HTML')
 
 
 async def leaderboard(update: Update, context: CallbackContext) -> None:
