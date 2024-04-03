@@ -31,9 +31,9 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
         group_name = html.escape(group.get('group_name', 'Unknown'))
 
         if len(group_name) > 10:
-            group_name = group_name[:15] + '...'
+            group_name = group_name[:12] + '...'
         count = group['count']
-        leaderboard_message += f'{i}. <b>{group_name}</b> ➾ <b>{count}</b>\n'
+        leaderboard_message += f'┣{i}. <b>{group_name}</b> ➾ <b>{count}</b>\n'
     
     
     photo_url = random.choice(PHOTO_URL)
@@ -51,7 +51,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     ])
     leaderboard_data = await cursor.to_list(length=10)
 
-    leaderboard_message = "<b>˹👑˼ℭ𝔥𝔞𝔱 𝔏𝔢𝔞𝔡𝔢𝔯𝔟𝔬𝔞𝔯D</b>\n\n┏━┅┅┄┄⟞⟦👑⟧⟝┄┄┉┉━┓\n"
+    leaderboard_message = "<b>˹ιтz˼ | ◈ 👑˼ℭ𝔥𝔞𝔱 𝔏𝔢𝔞𝔡𝔢𝔯𝔟𝔬𝔞𝔯D</b>\n\n┏━┅┅┄┄⟞⟦👑⟧⟝┄┄┉┉━┓\n"
     
 
     for i, user in enumerate(leaderboard_data, start=1):
@@ -59,7 +59,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
         first_name = html.escape(user.get('first_name', 'Unknown'))
 
         if len(first_name) > 10:
-            first_name = first_name[:8] + '...'
+            first_name = first_name[:12] + '...'
         character_count = user['character_count']
         leaderboard_message += f'┣ {i}. <a href="https://t.me/{username}"><b>{first_name}</b></a> ⇒ <code>{character_count}</code>\n'
         koka = leaderboard_message + f'┗━┅┅┄┄⟞⟦👑⟧⟝┄┄┉┉━┛'
