@@ -90,7 +90,7 @@ async def button(update: Update, context: CallbackContext):
             except Exception as e:
                 print(f"Error deleting message: {e}")
         else:
-            await query.message.reply_text("Message to delete not found.")
+            print()
 
 async def leaderboard(update: Update, context: CallbackContext) -> None:
     
