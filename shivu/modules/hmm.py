@@ -2,6 +2,8 @@ import asyncio
 from shivu import *
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackContext
 
 
 def create_delete_button():
