@@ -17,7 +17,7 @@ from shivu import (application, PHOTO_URL, OWNER_ID,
 from shivu import sudo_users as SUDO_USERS 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CallbackQueryHandler
-
+from telegram.ext import *
 
 async def global_leaderboard(update: Update, context: CallbackContext) -> None:
     
@@ -55,7 +55,6 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     leaderboard_data = await cursor.to_list(length=10)
 
     leaderboard_message = "<b>˹ιтz˼ | ◈ 👑˼ℭ𝔥𝔞𝔱 𝔏𝔢𝔞𝔡𝔢𝔯𝔟𝔬𝔞𝔯D</b>\n\n┏━┅┅┄┄⟞⟦👑⟧⟝┄┄┉┉━┓\n"
-    
 
     for i, user in enumerate(leaderboard_data, start=1):
         username = user.get('username', 'Unknown')
@@ -68,8 +67,15 @@ async def ctop(update: Update, context: CallbackContext) -> None:
         koka = leaderboard_message + f'┗━┅┅┄┄⟞⟦👑⟧⟝┄┄┉┉━┛'
     photo_url = random.choice(PHOTO_URL)
 
-    await update.message.reply_photo(photo=photo_url, caption=koka , parse_mode='HTML')
+    # Setup inline buttons
+    keyboard = [[InlineKeyboardButton("Delete Message", callback_data='delete')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
+    # Send message with inline buttons
+    message = await update.message.reply_photo(photo=photo_url, caption=koka , parse_mode='HTML', reply_markup=reply_markup)
+    
+    # Store the message ID for later deletion
+    context.user_data['message_to_delete'] = message.message_id
 
 async def leaderboard(update: Update, context: CallbackContext) -> None:
     
