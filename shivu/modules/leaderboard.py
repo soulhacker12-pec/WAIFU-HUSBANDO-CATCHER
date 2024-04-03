@@ -18,23 +18,6 @@ from shivu import sudo_users as SUDO_USERS
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CallbackQueryHandler
 
-class TelegramBot:
-    def __init__(self, token):
-        self.token = token
-        self.updater = Updater(token=self.token, use_context=True)
-        self.dispatcher = self.updater.dispatcher
-        self.dispatcher.add_handler(CallbackQueryHandler(self.button))
-
-    def cc(self, update, context):
-        keyboard = [[InlineKeyboardButton("Delete Message", callback_data='delete')]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('Click the button below to delete this message:', reply_markup=reply_markup)
-
-    def button(self, update, context):
-        query = update.callback_query
-        query.answer()
-        if query.data == 'delete':
-            context.bot.delete_message(chat_id=query.message.chat_id, message_id=query.message.message_id)
 
 async def global_leaderboard(update: Update, context: CallbackContext) -> None:
     
