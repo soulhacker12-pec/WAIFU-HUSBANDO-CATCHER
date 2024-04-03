@@ -43,6 +43,7 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
 
     await update.message.reply_photo(photo=photo_url, caption=u177, parse_mode='HTML')
 
+
 async def ctop(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
 
@@ -68,7 +69,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     photo_url = random.choice(PHOTO_URL)
 
     # Setup inline buttons
-    keyboard = [[InlineKeyboardButton("🚮", callback_data='delete')]]
+    keyboard = [[InlineKeyboardButton("Delete Message", callback_data='delete')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Send message with inline buttons
@@ -84,10 +85,12 @@ async def button(update: Update, context: CallbackContext):
         # Delete the message using the stored message ID
         message_to_delete = context.user_data.get('message_to_delete')
         if message_to_delete:
-            await context.bot.delete_message(chat_id=query.message.chat_id, message_id=message_to_delete)
+            try:
+                await context.bot.delete_message(chat_id=query.message.chat_id, message_id=message_to_delete)
+            except Exception as e:
+                print(f"Error deleting message: {e}")
         else:
             await query.message.reply_text("Message to delete not found.")
-
 
 async def leaderboard(update: Update, context: CallbackContext) -> None:
     
