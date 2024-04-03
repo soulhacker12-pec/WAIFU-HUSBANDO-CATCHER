@@ -59,7 +59,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
         first_name = html.escape(user.get('first_name', 'Unknown'))
 
         if len(first_name) > 10:
-            first_name = first_name[:15] + '...'
+            first_name = first_name[:7] + '...'
         character_count = user['character_count']
         leaderboard_message += f'┣ {i}. <a href="https://t.me/{username}"><b>{first_name}</b></a> ⇒ <code>{character_count}</code>\n'
         koka = leaderboard_message + f'┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛'
