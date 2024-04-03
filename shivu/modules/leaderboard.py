@@ -68,7 +68,7 @@ async def ctop(update: Update, context: CallbackContext) -> None:
     photo_url = random.choice(PHOTO_URL)
 
     # Setup inline buttons
-    keyboard = [[InlineKeyboardButton("Delete Message", callback_data='delete')]]
+    keyboard = [[InlineKeyboardButton("🚮", callback_data='delete')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Send message with inline buttons
