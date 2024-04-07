@@ -52,5 +52,5 @@ async def check_character(update: Update, context: CallbackContext) -> None:
     except Exception as e:
         await update.message.reply_text(f'Error: {str(e)}')
 
-CHECK_HANDLER = CommandHandler('check', check_character, pass_args=True, block=False)
+CHECK_HANDLER = CommandHandler('check', check_character, block=False)
 application.add_handler(CHECK_HANDLER)
