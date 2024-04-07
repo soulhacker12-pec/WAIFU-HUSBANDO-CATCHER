@@ -18,10 +18,10 @@ async def find(update: Update, context: CallbackContext) -> None:
         found_characters = await cursor.to_list(None)
 
         if found_characters:
-            # Format the IDs with prefix 'id' and a number
-            formatted_ids = [f'id{char["id"]}' for char in found_characters]
-            ids_text = ', '.join(formatted_ids)
-            await update.message.reply_text(f"IDs of found characters: {ids_text}")
+            # Extract the IDs from found characters and wrap each in <code> tags
+            ids_list = [f'<code>{char["id"]}</code>' for char in found_characters]
+            ids_text = ', '.join(ids_list)
+            await update.message.reply_text(f"IDs of found characters: {ids_text}", parse_mode='HTML')
         else:
             await update.message.reply_text('No characters found.')
 
