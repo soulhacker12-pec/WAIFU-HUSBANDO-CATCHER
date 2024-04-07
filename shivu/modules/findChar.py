@@ -1,4 +1,4 @@
-from pymongo import TEXT, DESCENDING
+from pymongo import TEXT
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
 from shivu import application, collection
@@ -12,24 +12,8 @@ async def find(update: Update, context: CallbackContext) -> None:
 
         search_query = args[0].replace('-', ' ').title()
 
-        # Perform case-insensitive partial match search and sort by text score
-        cursor = collection.aggregate([
-            {
-                '$match': {
-                    'name': {'$regex': search_query, '$options': 'i'}
-                }
-            },
-            {
-                '$project': {
-                    'name': 1,
-                    'id': 1,
-                    'score': {'$meta': 'textScore'}
-                }
-            },
-            {
-                '$sort': {'score': {'$meta': 'textScore'}}
-            }
-        ])
+        # Perform case-insensitive partial match search using text index
+        cursor = collection.find({'$text': {'$search': search_query}})
 
         found_characters = await cursor.to_list(None)
 
@@ -44,3 +28,6 @@ async def find(update: Update, context: CallbackContext) -> None:
 
 FIND_HANDLER = CommandHandler('find', find, block=False)
 application.add_handler(FIND_HANDLER)
+
+# Create a text index on the 'name' field
+collection.create_index([('name', TEXT)], default_language='english')
