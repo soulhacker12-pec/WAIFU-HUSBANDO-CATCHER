@@ -36,10 +36,10 @@ async def check_character(update: Update, context: CallbackContext) -> None:
             rarity_text = rarity_emoji.get(rarity_symbol, 'Unknown Rarity')
 
             reply_message = (
-                f'<b>Character Name:</b> {character["name"]}\n'
-                f'<b>Anime:</b> {character["anime"]}\n'
-                f'<b>Rarity:</b> {rarity_symbol} {rarity_text}\n'
-                f'<b>Character ID:</b> {character["id"]}'
+                f'Character Name: {character["name"]}\n'
+                f'Anime: {character["anime"]}\n'
+                f'Rarity: {rarity_symbol} {rarity_text}\n'
+                f'Character ID: {character["id"]}'
             )
 
             await update.message.reply_photo(
