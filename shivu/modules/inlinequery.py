@@ -4,12 +4,10 @@ from html import escape
 from cachetools import TTLCache
 from pymongo import MongoClient, ASCENDING
 
-from telegram import Update, InlineQueryResultPhoto
-from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineQueryResultPhoto, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler, CallbackQueryHandler
 
 from shivu import user_collection, collection, application, db
-
 
 # collection
 db.characters.create_index([('id', ASCENDING)])
@@ -69,22 +67,60 @@ async def inlinequery(update: Update, context: CallbackContext) -> None:
         global_count = await user_collection.count_documents({'characters.id': character['id']})
         anime_characters = await collection.count_documents({'anime': character['anime']})
 
-        if query.startswith('collection.'):
-            user_character_count = sum(c['id'] == character['id'] for c in user['characters'])
-            user_anime_characters = sum(c['anime'] == character['anime'] for c in user['characters'])
-            caption = f"<b> Look At <a href='tg://user?id={user['id']}'>{(escape(user.get('first_name', user['id'])))}</a>'s Character</b>\n\n🌸: <b>{character['name']} (x{user_character_count})</b>\n🏖️: <b>{character['anime']} ({user_anime_characters}/{anime_characters})</b>\n<b>{character['rarity']}</b>\n\n<b>🆔️:</b> {character['id']}"
-        else:
-            caption = f"<b>Look At This Character !!</b>\n\n🌸:<b> {character['name']}</b>\n🏖️: <b>{character['anime']}</b>\n<b>{character['rarity']}</b>\n🆔️: <b>{character['id']}</b>\n\n<b>Globally Guessed {global_count} Times...</b>"
+        # Modified format for sending waifu image with inline button
+        caption = f"<b>Look At This Character !!</b>\n\n🌸:<b> {character['name']}</b>\n🏖️: <b>{character['anime']}</b>\n<b>{character['rarity']}</b>\n🆔️: <b>{character['id']}</b>\n\n<b>Globally Guessed {global_count} Times...</b>"
+        button_text = "Count Waifu"
+        button_payload = f"countwaifu_{character['id']}"  # Payload format: "countwaifu_<waifu_id>"
         results.append(
             InlineQueryResultPhoto(
                 thumbnail_url=character['img_url'],
                 id=f"{character['id']}_{time.time()}",
                 photo_url=character['img_url'],
                 caption=caption,
-                parse_mode='HTML'
+                parse_mode='HTML',
+                reply_markup=InlineKeyboardMarkup.from_button(
+                    InlineKeyboardButton(text=button_text, callback_data=button_payload)
+                )
             )
         )
 
     await update.inline_query.answer(results, next_offset=next_offset, cache_time=5)
 
+async def button_callback(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    user_id = query.from_user.id
+    waifu_id = query.data.split("_")[1]  # Extract the waifu ID from the payload
+
+    if user_id in user_collection_cache:
+        user = user_collection_cache[user_id]
+    else:
+        user = await user_collection.find_one({'id': user_id})
+        user_collection_cache[user_id] = user
+
+    if user:
+        waifu_count = sum(c['id'] == int(waifu_id) for c in user['characters'])
+        await query.answer(f"You have: {waifu_count}", show_alert=True)
+    else:
+        await query.answer("User data not found.", show_alert=True)
+
+async def count_waifu(update: Update, context: CallbackContext) -> None:
+    user_id = update.effective_user.id
+    if user_id in user_collection_cache:
+        user = user_collection_cache[user_id]
+    else:
+        user = await user_collection.find_one({'id': user_id})
+        user_collection_cache[user_id] = user
+
+    if user:
+        waifu_id = context.args[0] if context.args else None
+        if waifu_id:
+            waifu_count = sum(c['id'] == int(waifu_id) for c in user['characters'])
+            await update.message.reply_text(f"You have {waifu_count} of the same waifu with ID {waifu_id}.")
+        else:
+            await update.message.reply_text("Please provide a valid waifu ID.")
+    else:
+        await update.message.reply_text("User data not found.")
+
 application.add_handler(InlineQueryHandler(inlinequery, block=False))
+application.add_handler(CallbackQueryHandler(button_callback, pattern=r'^countwaifu_'))
+application.add_handler(CommandHandler("countwaifu", count_waifu))
