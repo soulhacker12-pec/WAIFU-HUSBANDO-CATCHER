@@ -14,7 +14,7 @@ async def add_waifu_to_user(user_id, waifus):
     user = await user_collection.find_one({'id': user_id})
     if user:
         await user_collection.update_one({'id': user_id}, {'$push': {'characters': {'$each': waifus}}})
-        await deduct_charms(user_id, 200 * len(waifus))  # Deduct 250 charms for each waifu added
+        await deduct_charms(user_id, 50 * len(waifus))  # Deduct 250 charms for each waifu added
     else:
         await user_collection.insert_one({'id': user_id, 'characters': waifus})
 
@@ -40,13 +40,13 @@ async def spin(update: Update, context: CallbackContext) -> None:
         if spin_count <= 0:
             await update.message.reply_text('Please enter a positive number for spins.')
             return
-        elif spin_count > 1000:
+        elif spin_count > 5000:
             await update.message.reply_text('You can only spin up to 1000 times.')
             return
 
         # Check if the user has sufficient charms for the spin
         user_id = update.effective_user.id
-        charms_needed = 200 * spin_count
+        charms_needed = 50 * spin_count
         sufficient_charms = await check_sufficient_charms(user_id, charms_needed)
 
         if not sufficient_charms:
