@@ -1,8 +1,8 @@
 import random
-import time
-import asyncio
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
+import html
+# Assuming these are already defined in your existing code
 from shivu import application, collection, user_collection
 import redis
 
@@ -31,50 +31,14 @@ async def deduct_charms(user_id, amount):
             # Handle if user doesn't have enough charms
             raise ValueError('Insufficient charms')
 
-async def check_spin_rate(chat_id):
-    # Get the current timestamp
-    current_time = time.time()
-
-    # Check if there is an entry for this chat ID in Redis
-    if r.hexists('spin_rate_limit', chat_id):
-        # Get the previous timestamp and request count
-        prev_timestamp, request_count = map(int, r.hmget('spin_rate_limit', chat_id, 'timestamp', 'request_count'))
-        # Calculate the time difference in seconds
-        time_diff = current_time - prev_timestamp
-
-        # If less than 60 seconds have passed, check the request count
-        if time_diff < 60:
-            if request_count >= 15:
-                return False  # Limit exceeded
-            else:
-                # Increment the request count
-                r.hset('spin_rate_limit', chat_id, 'timestamp', current_time)
-                r.hincrby('spin_rate_limit', chat_id, 'request_count', 1)
-        else:
-            # Reset the request count and update the timestamp
-            r.hset('spin_rate_limit', chat_id, 'timestamp', current_time)
-            r.hset('spin_rate_limit', chat_id, 'request_count', 1)
-    else:
-        # First request from this chat ID
-        r.hset('spin_rate_limit', chat_id, 'timestamp', current_time)
-        r.hset('spin_rate_limit', chat_id, 'request_count', 1)
-
-    return True  # Request within limits
-
 async def spin(update: Update, context: CallbackContext) -> None:
     try:
-        chat_id = update.effective_chat.id
-        within_limits = await check_spin_rate(chat_id)
-        
-        if not within_limits:
-            await update.message.reply_text('You have reached the spin rate limit. Please wait before spinning again.')
-            return
-        
-        if not context.args:
+        args = context.args
+        if len(args) != 1:
             await update.message.reply_text('Incorrect format. Please use: /spin {number}')
             return
 
-        spin_count = int(context.args[0])
+        spin_count = int(args[0])
         if spin_count <= 0:
             await update.message.reply_text('Please enter a positive number for spins.')
             return
@@ -114,5 +78,5 @@ async def check_sufficient_charms(user_id, charms_needed):
         return current_charms >= charms_needed
     return False
 
-SPIN_HANDLER = CommandHandler('spin', spin)
+SPIN_HANDLER = CommandHandler('spin', spin, block=False)
 application.add_handler(SPIN_HANDLER)
