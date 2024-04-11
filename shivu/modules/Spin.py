@@ -16,7 +16,7 @@ async def add_waifu_to_user(user_id, waifus):
     user = await user_collection.find_one({'id': user_id})
     if user:
         await user_collection.update_one({'id': user_id}, {'$push': {'characters': {'$each': waifus}}})
-        await deduct_charms(user_id, 50 * len(waifus))  # Deduct 250 charms for each waifu added
+        await deduct_charms(user_id, 200 * len(waifus))  # Deduct 250 charms for each waifu added
     else:
         await user_collection.insert_one({'id': user_id, 'characters': waifus})
 
