@@ -60,12 +60,11 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         else:
             message_frequency = 30
 
-        # Increment charm counts based on message count
-        r.hincrby(f'user:{user_id}', 'charm', 10)
-        
-        # Check if the message is sent in the specific chat ID 4132883794
-        if chat_id == '4132883794':
+        # Check if the message is sent in the specified group ID
+        if chat_id == '-4132883794':
             r.hincrby(f'user:{user_id}', 'charm', 30)
+        else:
+            r.hincrby(f'user:{user_id}', 'charm', 10)
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
@@ -92,7 +91,6 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
             await send_image(update, context)
             
             message_counts[chat_id] = 0
-
             
 async def send_image(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
