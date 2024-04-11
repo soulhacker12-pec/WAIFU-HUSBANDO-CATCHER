@@ -2,6 +2,9 @@ import random
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
 import html
+import asyncio
+import os
+
 # Assuming these are already defined in your existing code
 from shivu import application, collection, user_collection
 import redis
@@ -42,8 +45,8 @@ async def spin(update: Update, context: CallbackContext) -> None:
         if spin_count <= 0:
             await update.message.reply_text('Please enter a positive number for spins.')
             return
-        elif spin_count > 10:
-            await update.message.reply_text('You can only spin up to 10 times.')
+        elif spin_count > 1000:
+            await update.message.reply_text('You can only spin up to 1000 times.')
             return
 
         # Check if the user has sufficient charms for the spin
@@ -64,7 +67,14 @@ async def spin(update: Update, context: CallbackContext) -> None:
             await add_waifu_to_user(user_id, waifus)
 
             reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n\n' for waifu in waifus])
-            await update.message.reply_text(reply_message, parse_mode='html')
+            
+            # Check if reply exceeds 4000 characters or more than 20 waifus
+            if len(reply_message) > 4000 or len(waifus) > 20:
+                with open('reply.txt', 'w') as file:
+                    file.write(reply_message)
+                await update.message.reply_text('Reply text exceeds limit. Check the file for details.')
+            else:
+                await update.message.reply_text(reply_message, parse_mode='html')
         else:
             await update.message.reply_text('No waifus found.')
     except Exception as e:
