@@ -38,7 +38,7 @@ async def check_spin_rate(chat_id):
     # Check if there is an entry for this chat ID in Redis
     if r.hexists('spin_rate_limit', chat_id):
         # Get the previous timestamp and request count
-        prev_timestamp, request_count = map(int, r.hmget('spin_rate_limit', chat_id))
+        prev_timestamp, request_count = map(int, r.hmget('spin_rate_limit', chat_id, 'timestamp', 'request_count'))
         # Calculate the time difference in seconds
         time_diff = current_time - prev_timestamp
 
@@ -48,13 +48,13 @@ async def check_spin_rate(chat_id):
                 return False  # Limit exceeded
             else:
                 # Increment the request count
-                r.hset('spin_rate_limit', chat_id, current_time, request_count + 1)
+                r.hset('spin_rate_limit', chat_id, 'timestamp', current_time, 'request_count', request_count + 1)
         else:
             # Reset the request count and update the timestamp
-            r.hset('spin_rate_limit', chat_id, current_time, 1)
+            r.hset('spin_rate_limit', chat_id, 'timestamp', current_time, 'request_count', 1)
     else:
         # First request from this chat ID
-        r.hset('spin_rate_limit', chat_id, current_time, 1)
+        r.hset('spin_rate_limit', chat_id, 'timestamp', current_time, 'request_count', 1)
 
     return True  # Request within limits
 
@@ -67,12 +67,11 @@ async def spin(update: Update, context: CallbackContext) -> None:
             await update.message.reply_text('You have reached the spin rate limit. Please wait before spinning again.')
             return
         
-        args = context.args
-        if len(args) != 1:
+        if not context.args:
             await update.message.reply_text('Incorrect format. Please use: /spin {number}')
             return
 
-        spin_count = int(args[0])
+        spin_count = int(context.args[0])
         if spin_count <= 0:
             await update.message.reply_text('Please enter a positive number for spins.')
             return
@@ -112,5 +111,5 @@ async def check_sufficient_charms(user_id, charms_needed):
         return current_charms >= charms_needed
     return False
 
-SPIN_HANDLER = CommandHandler('spin', spin, block=False)
+SPIN_HANDLER = CommandHandler('spin', spin)
 application.add_handler(SPIN_HANDLER)
