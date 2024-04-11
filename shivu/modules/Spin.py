@@ -61,10 +61,13 @@ async def spin(update: Update, context: CallbackContext) -> None:
             # Add the waifus obtained from spin to the user's collection
             await add_waifu_to_user(user_id, waifus)
 
-            reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n\n' for waifu in waifus])
+            reply_message = "\n".join([f'Anime: {waifu["name"]}\nAnime: {waifu["anime"]}\nRarity: {waifu["rarity"]}\n\n' for waifu in waifus])
             
             # Check if reply exceeds 4000 characters or more than 20 waifus
-            if len(reply_message) > 4000 or len(waifus) > 20:
+            if len(waifus) <= 20:
+                reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n\n' for waifu in waifus])
+            
+            if len(reply_message) > 4000:
                 with open('reply.txt', 'w') as file:
                     file.write(reply_message)
                 await update.message.reply_document(document=open('reply.txt', 'rb'), caption='ʀᴇᴘʟʏ ᴛᴇxᴛ ᴇxᴄᴇᴇᴅs ᴛɢ\'s ʟɪᴍɪᴛs. ᴘʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴛʜᴇ ғɪʟᴇ, ғᴏʀ ʏᴏᴜʀ ᴅʀᴀᴡɴ ᴡᴀɪғᴜs.')
