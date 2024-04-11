@@ -4,6 +4,7 @@ import random
 import re
 import asyncio
 from html import escape 
+import html
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
@@ -13,6 +14,14 @@ from telegram.ext import CommandHandler, CallbackContext, MessageHandler, filter
 from shivu import collection, top_global_groups_collection, group_user_totals_collection, user_collection, user_totals_collection, shivuu
 from shivu import application, SUPPORT_CHAT, UPDATE_CHAT, db, LOGGER
 from shivu.modules import ALL_MODULES
+import redis
+
+# Redis connection setup
+r = redis.Redis(
+    host='redis-13192.c282.east-us-mz.azure.cloud.redislabs.com',
+    port=13192,
+    password='wKgGC52NC9NRhic36fDIvWh76dngPvP9')
+
 
 zen_dict = {}  # Our dictionary to store channel ID and character name pairs
 locks = {}
@@ -115,20 +124,25 @@ async def guess(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text(f'❌️ Already Guessed By Someone.. Try Next Time Bruhh ')
         return
 
+    user_info_key = f'user:{user_id}'
+    if not r.exists(user_info_key):
+        r.hincrby(user_info_key, 'charm', 2000)
+        await update.message.reply_text('<b>You claimed <code>2000 </code>Charms</b>.', parse_mode='html')
+
     guess = ' '.join(context.args).lower() if context.args else ''
     
     if "()" in guess or "&" in guess.lower():
         await update.message.reply_text("Nahh You Can't use This Types of words in your guess..❌️")
         return
 
-
     name_parts = last_characters[chat_id]['name'].lower().split()
 
     if sorted(name_parts) == sorted(guess.split()) or any(part == guess for part in name_parts):
-
-    
         first_correct_guesses[chat_id] = user_id
-        
+
+        # Increment charms by 200 upon correct guess
+        r.hincrby(user_info_key, 'charm', 200)
+
         user = await user_collection.find_one({'id': user_id})
         if user:
             update_fields = {}
@@ -149,7 +163,6 @@ async def guess(update: Update, context: CallbackContext) -> None:
                 'characters': [last_characters[chat_id]],
             })
 
-        
         group_user_total = await group_user_totals_collection.find_one({'user_id': user_id, 'group_id': chat_id})
         if group_user_total:
             update_fields = {}
@@ -171,8 +184,6 @@ async def guess(update: Update, context: CallbackContext) -> None:
                 'count': 1,
             })
 
-
-    
         group_info = await top_global_groups_collection.find_one({'group_id': chat_id})
         if group_info:
             update_fields = {}
@@ -190,20 +201,14 @@ async def guess(update: Update, context: CallbackContext) -> None:
                 'count': 1,
             })
 
-
-        
         keyboard = [[InlineKeyboardButton(f"See Harem", switch_inline_query_current_chat=f"collection.{user_id}")]]
-
 
         await update.message.reply_text(f'<b><a href="tg://user?id={user_id}">{escape(update.effective_user.first_name)}</a></b> You Guessed a New Character ✅️ \n\n𝗡𝗔𝗠𝗘: <b>{last_characters[chat_id]["name"]}</b> \n𝗔𝗡𝗜𝗠𝗘: <b>{last_characters[chat_id]["anime"]}</b> \n𝗥𝗔𝗜𝗥𝗧𝗬: <b>{last_characters[chat_id]["rarity"]}</b>\n\nThis Character added in Your harem.. use /harem To see your harem', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard))
         if chat_id in zen_dict:
-            del zen_dict[chat_id]  # Reset the channel after a correct guess
-
-
+            del zen_dict[chat_id]
+            
     else:
         await update.message.reply_text('Please Write Correct Character Name... ❌️')
-   
-
 
 async def fav(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
@@ -243,20 +248,32 @@ async def store_character(update: Update, context: CallbackContext) -> None:
         return
 
     character_name = zen_dict[chat_id]  # Retrieve the stored name
-    
-    await update.message.reply_text(f'<b>Character name</b>: <code>{character_name}</code>\n\n<b>Copy-String</b>: <code>/protecc {character_name}</code>',parse_mode='html') # Send the corrected message 
-    
+    del zen_dict[chat_id]  # Clear the entry after sending
 
+    await update.message.reply_text(f'<b>Character name</b>: <code>{character_name}</code>\n\n<b>Copy-String</b>: <code>/protecc {character_name}</code>',parse_mode='html') # Send the corrected message 
+
+async def get_charm_count(user_id: int) -> int:
+    """Get the charm count for a user."""
+    user_info_key = f'user:{user_id}'
+    charm_count = r.hget(user_info_key, 'charm')
+    return int(charm_count) if charm_count else 0
+
+async def send_charm_count(update: Update, context: CallbackContext) -> None:
+    """Send the formatted charm count message to the user."""
+    user_id = update.effective_user.id
+    charm_count = await get_charm_count(user_id)
+    await update.message.reply_text(f"<b>┏━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┓\n┣ ¢нαямѕ ˹𝕮𝖔𝖚𝖓𝖙˼</b> <code>➾ {charm_count}</code>\n┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛\n", parse_mode='html')
+    LOGGER.info("Sex")
 
 
 def main() -> None:
     """Run bot."""
 
-    application.add_handler(CommandHandler(["guess", "protecc", "collect", "grab", "hunt"], guess, block=False))
+    application.add_handler(CommandHandler(["protecc", "collect", "grab", "hunt"], guess, block=False))
     application.add_handler(CommandHandler("fav", fav, block=False))
     application.add_handler(CommandHandler("s", store_character, block=False))
+    application.add_handler(CommandHandler("charms", send_charm_count, block=False))
     application.add_handler(MessageHandler(filters.ALL, message_counter, block=False))
-
 
     application.run_polling(drop_pending_updates=True)
     
@@ -264,4 +281,3 @@ if __name__ == "__main__":
     shivuu.start()
     LOGGER.info("Bot started")
     main()
-
