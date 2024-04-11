@@ -20,7 +20,7 @@ async def add_waifu_to_user(user_id, waifus):
     else:
         await user_collection.insert_one({'id': user_id, 'characters': waifus})
 
-async def deduct_charms(user_id, amount, update: Update, context: CallbackContext) -> None:
+async def deduct_charms(user_id, amount):
     user_info_key = f'user:{user_id}'
     current_charms = r.hget(user_info_key, 'charm')
     if current_charms:
