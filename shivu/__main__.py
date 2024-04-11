@@ -5,6 +5,7 @@ import re
 import asyncio
 from html import escape 
 import html
+import locale
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
@@ -262,7 +263,16 @@ async def send_charm_count(update: Update, context: CallbackContext) -> None:
     """Send the formatted charm count message to the user."""
     user_id = update.effective_user.id
     charm_count = await get_charm_count(user_id)
-    await update.message.reply_text(f"<b>┏━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┓\n┣ ¢нαямѕ ˹𝕮𝖔𝖚𝖓𝖙˼</b> <code>➾ {charm_count}</code>\n┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛\n", parse_mode='html')
+    
+    locale.setlocale(locale.LC_ALL, '')  # Set the locale to the system's default
+    formatted_charm_count = locale.format_string("%d", charm_count, grouping=True)
+
+    message = (
+        f"<b>┏━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┓\n"
+        f"┣ ¢нαямѕ ˹𝕮𝖔𝖚𝖓𝖙˼</b> <code>➾ {formatted_charm_count}</code>\n"
+        f"┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛\n"
+    )
+    await update.message.reply_text(message, parse_mode='html')
     LOGGER.info("Sex")
 
 
