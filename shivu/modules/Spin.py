@@ -1,11 +1,6 @@
 import random
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
-import html
-import asyncio
-import os
-
-# Assuming these are already defined in your existing code
 from shivu import application, collection, user_collection
 import redis
 
