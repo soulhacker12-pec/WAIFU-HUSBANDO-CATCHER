@@ -28,7 +28,8 @@ async def deduct_charms(user_id, amount):
         if current_charms >= amount:
             r.hincrby(user_info_key, 'charm', -amount)  # Deduct the specified amount of charms
         else:
-            # Handle insufficient charms scenario
+            await update.message.reply_text("ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴄʜᴀʀᴍs..")
+
             # For example, send a message to the user or take appropriate action
             pass
     else:
