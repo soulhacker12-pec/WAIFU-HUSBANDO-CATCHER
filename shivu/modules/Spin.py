@@ -67,7 +67,7 @@ async def spin(update: Update, context: CallbackContext) -> None:
             if len(reply_message) > 4000 or len(waifus) > 20:
                 with open('reply.txt', 'w') as file:
                     file.write(reply_message)
-                await update.message.reply_text('Reply text exceeds limit. Check the file for details.')
+                await update.message.reply_document(document=open('waifus.txt', 'rb'), caption='ʀᴇᴘʟʏ ᴛᴇxᴛ ᴇxᴄᴇᴇᴅs ᴛɢ's ʟɪᴍɪᴛs. ᴘʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴛʜᴇ ғɪʟᴇ, ғᴏʀ ʏᴏᴜʀ ᴅʀᴀᴡɴ ᴡᴀɪғᴜs.')
             else:
                 await update.message.reply_text(reply_message, parse_mode='html')
         else:
