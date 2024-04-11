@@ -48,13 +48,16 @@ async def check_spin_rate(chat_id):
                 return False  # Limit exceeded
             else:
                 # Increment the request count
-                r.hset('spin_rate_limit', chat_id, 'timestamp', current_time, 'request_count', request_count + 1)
+                r.hset('spin_rate_limit', chat_id, 'timestamp', current_time)
+                r.hincrby('spin_rate_limit', chat_id, 'request_count', 1)
         else:
             # Reset the request count and update the timestamp
-            r.hset('spin_rate_limit', chat_id, 'timestamp', current_time, 'request_count', 1)
+            r.hset('spin_rate_limit', chat_id, 'timestamp', current_time)
+            r.hset('spin_rate_limit', chat_id, 'request_count', 1)
     else:
         # First request from this chat ID
-        r.hset('spin_rate_limit', chat_id, 'timestamp', current_time, 'request_count', 1)
+        r.hset('spin_rate_limit', chat_id, 'timestamp', current_time)
+        r.hset('spin_rate_limit', chat_id, 'request_count', 1)
 
     return True  # Request within limits
 
