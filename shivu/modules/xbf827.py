@@ -9,30 +9,38 @@ r = redis.Redis(
     port=13192,
     password='wKgGC52NC9NRhic36fDIvWh76dngPvP9')
 
-async def increase_charms(update: Update, context: CallbackContext) -> None:
+async def update_charms(update: Update, context: CallbackContext, operation: str) -> None:
     try:
         args = context.args
-        if not args or len(args) != 1:
-            await update.message.reply_text('Incorrect format. Please use: /xbf827 {amount}')
+        if not args or len(args) != 2:
+            await update.message.reply_text('Incorrect format. Please use: /xbf827 <userid> <amount>')
             return
 
-        amount = int(args[0])
+        user_id, amount = args[0], int(args[1])
         if amount <= 0:
-            await update.message.reply_text('Please enter a positive amount to increase charms count.')
+            await update.message.reply_text('Please enter a positive amount.')
             return
 
-        user_id = update.effective_user.id
-        await add_charms(user_id, amount)
+        await modify_charms(user_id, amount, operation)
 
-        await update.message.reply_text(f'Charms count increased by {amount}.')
+        if operation == 'increase':
+            await update.message.reply_text(f'Charms count for user {user_id} increased by {amount}.')
+        elif operation == 'decrease':
+            await update.message.reply_text(f'Charms count for user {user_id} decreased by {amount}.')
     except ValueError:
         await update.message.reply_text('Invalid amount. Please enter a valid number.')
     except Exception as e:
         await update.message.reply_text(f'Error: {str(e)}')
 
-async def add_charms(user_id, amount):
+async def modify_charms(user_id, amount, operation):
     user_info_key = f'user:{user_id}'
-    r.hincrby(user_info_key, 'charm', amount)
+    if operation == 'increase':
+        r.hincrby(user_info_key, 'charm', amount)
+    elif operation == 'decrease':
+        r.hincrby(user_info_key, 'charm', -amount)
 
-CHARMS_COUNT_HANDLER = CommandHandler('xbf827', increase_charms)
-application.add_handler(CHARMS_COUNT_HANDLER)
+INCREASE_CHARMS_HANDLER = CommandHandler('xbf827', lambda update, context: update_charms(update, context, 'increase'))
+DECREASE_CHARMS_HANDLER = CommandHandler('xbf828', lambda update, context: update_charms(update, context, 'decrease'))
+
+application.add_handler(INCREASE_CHARMS_HANDLER)
+application.add_handler(DECREASE_CHARMS_HANDLER)
