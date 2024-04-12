@@ -26,7 +26,7 @@ async def update_charms(update: Update, context: CallbackContext, operation: str
             return
 
         await transfer_charms(sender, receiver_name, amount, operation)
-        await update.message.reply_text(f'<b>{sender} ᴛʀᴀɴsғᴇʀʀᴇᴅ {amount} ᴄʜᴀʀᴍs ᴛᴏ {receiver_name}.</b>',parse_mode='html')
+        await update.message.reply_text(f'<b>{sender} ᴛʀᴀɴsғᴇʀʀᴇᴅ {amount} ᴄʜᴀʀᴍs ᴛᴏ <code>{receiver_name}</code></b>',parse_mode='html')
 
     except ValueError:
         await update.message.reply_text('Invalid amount. Please enter a valid number.')
