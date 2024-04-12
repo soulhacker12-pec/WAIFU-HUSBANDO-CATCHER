@@ -1,46 +1,46 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackContext, CommandHandler
+from telegram.ext import CallbackContext, CommandHandler, CallbackQueryHandler
 from shivu import user_collection, application  # Adjust this import based on your actual database setup
 
-async def locate(update: Update, context: CallbackContext, waifu_no: int) -> None:
+async def get_character_count(user_id: int, char_id: int) -> int:
+    user = await user_collection.find_one({'id': user_id})
+    if user:
+        characters = user.get('characters', [])
+        return sum(character['id'] == char_id for character in characters)
+    return 0
+
+async def harem(update: Update, context: CallbackContext, char_id: int, page=0) -> None:
     user_id = update.effective_user.id
 
-    user = await user_collection.find_one({'id': user_id})
-    if not user:
-        if update.message:
-            await update.message.reply_text('You Have Not Guessed any Characters Yet..')
-        else:
-            await update.callback_query.edit_message_text('You Have Not Guessed any Characters Yet..')
-        return
+    # Get the count of the specific character
+    count = await get_character_count(user_id, char_id)
 
-    # Search for the character with the provided waifu_no in the user's collection
-    character_found = next((c for c in user['characters'] if c['waifu_no'] == waifu_no), None)
+    # Now you can use the count as needed in your harem function
+    # For example, you can include it in the caption or message
+    caption = f"You have {count} of character with ID {char_id} in your collection."
 
-    if character_found:
-        character_name = character_found['name']
-        character_img_url = character_found['img_url']
+    # Send the message with the count
+    await update.message.reply_text(caption)
 
-        # Caption template
-        caption = f"Character found!\n\nName: {character_name}\nWaifu Number: {waifu_no}"
+async def harem_callback(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    data = query.data
 
-        # Send photo of the character and caption
-        await update.message.reply_photo(
-            photo=character_img_url,
-            caption=caption
-        )
-    else:
-        await update.message.reply_text("Character not found in your collection.")
+    _, char_id, user_id = data.split(':')
+    char_id = int(char_id)
+    user_id = int(user_id)
 
-async def locate_command_handler(update: Update, context: CallbackContext):
-    # Extract the waifu number from the command
-    waifu_no = int(context.args[0]) if context.args else None
+    # Get the count of the specific character
+    count = await get_character_count(user_id, char_id)
 
-    if waifu_no is None:
-        await update.message.reply_text("Please provide a waifu number.")
-        return
+    # Now you can use the count as needed in your harem callback function
+    # For example, you can include it in the caption or message
+    caption = f"You have {count} of character with ID {char_id} in your collection."
 
-    # Call the locate function with the provided waifu number
-    await locate(update, context, waifu_no)
+    # Edit the message with the count
+    await query.edit_message_text(caption)
 
-# Add the command handler for /locate
-application.add_handler(CommandHandler("locate", locate_command_handler, block=False))
+# Add the command handler for /harem
+application.add_handler(CommandHandler("harem", harem, block=False))
+# Add the callback handler for harem pagination and other interactions
+application.add_handler(CallbackQueryHandler(harem_callback, pattern='^harem:', block=False))
