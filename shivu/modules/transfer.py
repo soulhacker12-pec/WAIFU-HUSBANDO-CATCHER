@@ -13,20 +13,29 @@ r = redis.Redis(
 async def update_charms(update: Update, context: CallbackContext, operation: str) -> None:
     try:
         args = context.args
-        if not args or len(args) < 2:
-            await update.message.reply_text('Incorrect format. Please use: /transfer <username> <amount>')
+        if not args or len(args) < 1:
+            await update.message.reply_text('Incorrect format. Please use: /transfer <amount> (when replied user) or /transfer <username> <amount>')
             return
 
         sender = update.effective_user.first_name
-        receiver_name = args[0]
-        amount = int(args[1])
+        amount = int(args[-1])  # Last argument is always the amount
 
         if amount <= 0:
             await update.message.reply_text('Please enter a positive amount.')
             return
 
+        # Check if there's a replied user
+        if update.message.reply_to_message and update.message.reply_to_message.from_user:
+            receiver_name = update.message.reply_to_message.from_user.first_name
+        else:
+            receiver_name = args[0] if len(args) == 2 else None
+
+        if not receiver_name:
+            await update.message.reply_text('Please specify a receiver.')
+            return
+
         await transfer_charms(sender, receiver_name, amount, operation)
-        await update.message.reply_text(f'<b>{sender} ᴛʀᴀɴsғᴇʀʀᴇᴅ {amount} ᴄʜᴀʀᴍs ᴛᴏ <code>{receiver_name}</code></b>',parse_mode='html')
+        await update.message.reply_text(f'<b>{sender} ᴛʀᴀɴsғᴇʀʀᴇᴅ {amount} ᴄʜᴀʀᴍs ᴛᴏ <code>{receiver_name}</code></b>', parse_mode='html')
 
     except ValueError:
         await update.message.reply_text('Invalid amount. Please enter a valid number.')
