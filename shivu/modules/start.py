@@ -1,7 +1,7 @@
 import random
 from html import escape
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, filters
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler, filters as Filters
 import redis
 
 # Redis connection setup
