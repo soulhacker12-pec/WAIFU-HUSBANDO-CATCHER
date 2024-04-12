@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, User
 from telegram.ext import CommandHandler, CallbackContext
 from shivu import application
 import redis
@@ -12,12 +12,12 @@ r = redis.Redis(
 
 async def update_charms(update: Update, context: CallbackContext, operation: str) -> None:
     try:
+        sender = update.effective_user
         args = context.args
         if not args or len(args) < 1:
             await update.message.reply_text('Incorrect format. Please use: /transfer <amount> (when replied user) or /transfer <username> <amount>')
             return
 
-        sender = update.effective_user.first_name
         amount = int(args[-1])  # Last argument is always the amount
 
         if amount <= 0:
@@ -26,25 +26,28 @@ async def update_charms(update: Update, context: CallbackContext, operation: str
 
         # Check if there's a replied user
         if update.message.reply_to_message and update.message.reply_to_message.from_user:
-            receiver_name = update.message.reply_to_message.from_user.first_name
+            receiver = update.message.reply_to_message.from_user
         else:
             receiver_name = args[0] if len(args) == 2 else None
+            if not receiver_name:
+                await update.message.reply_text('Please specify a receiver.')
+                return
+            receiver = await context.bot.get_chat_member(update.effective_chat.id, receiver_name)
+            if receiver.user.is_bot:
+                await update.message.reply_text("You can't transfer charms to bots.")
+                return
 
-        if not receiver_name:
-            await update.message.reply_text('Please specify a receiver.')
-            return
-
-        await transfer_charms(sender, receiver_name, amount, operation)
-        await update.message.reply_text(f'<b>{sender} ᴛʀᴀɴsғᴇʀʀᴇᴅ {amount} ᴄʜᴀʀᴍs ᴛᴏ <code>{receiver_name}</code></b>', parse_mode='html')
+        await transfer_charms(sender, receiver, amount, operation)
+        await update.message.reply_text(f'<b>{sender.first_name} ᴛʀᴀɴsғᴇʀʀᴇᴅ {amount} ᴄʜᴀʀᴍs ᴛᴏ <code>{receiver.first_name}</code></b>', parse_mode='html')
 
     except ValueError:
         await update.message.reply_text('Invalid amount. Please enter a valid number.')
     except Exception as e:
         await update.message.reply_text(f'Error: {str(e)}')
 
-async def transfer_charms(sender_name, receiver_name, amount, operation):
-    sender_key = f'user:{sender_name}'
-    receiver_key = f'user:{receiver_name}'
+async def transfer_charms(sender: User, receiver: User, amount: int, operation: str):
+    sender_key = f'user:{sender.id}'
+    receiver_key = f'user:{receiver.id}'
 
     if operation == 'increase':
         r.hincrby(sender_key, 'charm', -amount)
