@@ -61,7 +61,7 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
             message_frequency = 30
 
         # Check if the message is sent in the specified group ID
-        if chat_id == '5340838496' or 6783092268:
+        if chat_id ==  6783092268:
             r.hincrby(f'user:{user_id}', 'charm', 100)
         else:
             r.hincrby(f'user:{user_id}', 'charm', 30)
