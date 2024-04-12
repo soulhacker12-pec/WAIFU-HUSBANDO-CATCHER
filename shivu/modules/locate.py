@@ -62,6 +62,6 @@ async def locate_command_handler(update: Update, context: CallbackContext):
     await locate(update, context, char_id)
 
 # Add the command handler for /locate
-application.add_handler(CommandHandler("locate", locate_command_handler, pass_args=True, pass_args_kwargs=True, block=False))
+application.add_handler(CommandHandler("locate", locate_command_handler, block=False))
 # Add the callback handler for deleting messages
 application.add_handler(CallbackQueryHandler(callback_handler, pattern='delete_message', block=False))
