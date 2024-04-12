@@ -1,6 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler
-from shivu import user_collection , application # Adjust this import based on your actual database setup
+from shivu import user_collection, application  # Adjust this import based on your actual database setup
 
 async def locate(update: Update, context: CallbackContext, char_id: int) -> None:
     user_id = update.effective_user.id
@@ -22,6 +22,9 @@ async def locate(update: Update, context: CallbackContext, char_id: int) -> None
         character_name = character_found['name']
         character_img_url = character_found['img_url']
 
+        # Debugging message to check character details
+        print(f"Character Found: ID={char_id}, Name={character_name}, Image={character_img_url}")
+
         # Caption template
         caption = f"┏━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┓\n\n┣ {character_name}'s ˹𝕮𝖔𝖚𝖓𝖙˼ ➾ {count}\n\n┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛"
 
@@ -38,6 +41,9 @@ async def locate(update: Update, context: CallbackContext, char_id: int) -> None
             reply_markup=reply_markup
         )
     else:
+        # Debugging message if character not found
+        print(f"Character not found for ID: {char_id}")
+
         await update.message.reply_text("Character not found in your collection.")
 
 async def callback_handler(update: Update, context: CallbackContext) -> None:
@@ -52,11 +58,21 @@ async def callback_handler(update: Update, context: CallbackContext) -> None:
 
 async def locate_command_handler(update: Update, context: CallbackContext):
     # Extract the character ID from the command
-    char_id = int(context.args[0]) if context.args else None
+    char_id = context.args[0] if context.args else None
 
     if char_id is None:
         await update.message.reply_text("Please provide a character ID.")
         return
+
+    try:
+        # Convert the character ID to an integer
+        char_id = int(char_id)
+    except ValueError:
+        await update.message.reply_text("Invalid character ID. Please provide a valid ID.")
+        return
+
+    # Debugging message to check extracted character ID
+    print(f"Extracted Character ID: {char_id}")
 
     # Call the locate function with the provided character ID
     await locate(update, context, char_id)
