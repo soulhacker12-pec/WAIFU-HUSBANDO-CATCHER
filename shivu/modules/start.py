@@ -74,7 +74,7 @@ async def start(update: Update, context: CallbackContext) -> None:
         caption = """
         ***🍂 ɢʀᴇᴇᴛɪɴɢs, ɪ'ᴍ ˹ωαιƒυ χ ᴄℓυтᴄн˼ 🥤, ɴɪᴄᴇ ᴛᴏ ᴍᴇᴇᴛ ʏᴏᴜ!
 ━━━━━━━▧▣▧━━━━━━━
-⦾ ᴡʜᴀᴛ ɪ ᴅᴏ: ɪ sᴘᴀᴡɴ   
+⦾ ᴡʜᴀᴛ ɪ ᴅᴏ: ɪ sᴘᴀɴ   
      ωαιƒυ ɪɴ ʏᴏᴜʀ ᴄʜᴀᴛ ғᴏʀ
      ᴜsᴇʀs ᴛᴏ ɢʀᴀʙ.
 ⦾ ᴛᴏ ᴜsᴇ ᴍᴇ: ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ
@@ -117,7 +117,7 @@ async def button(update: Update, context: CallbackContext) -> None:
 ***/guess: To Guess character (only works in group)***
 ***/fav: Add Your fav***
 ***/trade : To trade Characters***
-***/gift: Give any Character from Your Collection to another user.. (only works in groups)***
+***/gift: Give any Character from Your Collection to another user.. (only works in groups)** 
 ***/collection: To see Your Collection***
 ***/topgroups : See Top Groups.. Ppl Guesses Most in that Groups***
 ***/top: Too See Top Users***
@@ -130,7 +130,6 @@ async def button(update: Update, context: CallbackContext) -> None:
         await context.bot.edit_message_caption(chat_id=update.effective_chat.id, message_id=query.message.message_id, caption=help_text, reply_markup=reply_markup, parse_mode='markdown')
 
     elif query.data == 'back':
-
         caption = """
         ***🍂 ɢʀᴇᴇᴛɪɴɢs, ɪ'ᴍ ˹ωαιƒυ χ ᴄℓυтᴄн˼ 🥤, ɴɪᴄᴇ ᴛᴏ ᴍᴇᴇᴛ ʏᴏᴜ!
 ━━━━━━━▧▣▧━━━━━━━
@@ -153,6 +152,15 @@ async def button(update: Update, context: CallbackContext) -> None:
 
         await context.bot.edit_message_caption(chat_id=update.effective_chat.id, message_id=query.message.message_id, caption=caption, reply_markup=reply_markup, parse_mode='markdown')
 
+async def referral(update: Update, context: CallbackContext) -> None:
+    user_id = update.effective_user.id
+    referral_code = r.get(f"referral:{user_id}")
+    if not referral_code:
+        referral_code = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=6))
+        r.set(f"referral:{user_id}", referral_code)
+    await update.message.reply_text(f"Your referral code: {referral_code}")
+
+application.add_handler(CommandHandler('referral', referral, filters=~Filters.group, block=False))
 
 application.add_handler(CallbackQueryHandler(button, pattern='^help$|^back$', block=False))
 start_handler = CommandHandler('start', start, block=False)
