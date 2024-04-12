@@ -44,9 +44,9 @@ async def callback_handler(update: Update, context: CallbackContext) -> None:
 
     if data == "delete_message":
         await query.message.delete()
+    
+    # Await the answer method
+    await query.answer()
 
 # Add the callback handler for deleting messages
 application.add_handler(CallbackQueryHandler(callback_handler, pattern='delete_message', block=False))
-
-# Add the command handler for /locate
-application.add_handler(CommandHandler("locate", locate, pass_args=True, pass_args_kwargs=True, block=False))￼Enter
