@@ -33,8 +33,8 @@ async def update_charms(update: Update, context: CallbackContext, operation: str
                 await update.message.reply_text('Please specify a receiver.')
                 return
             receiver = await context.bot.get_chat_member(update.effective_chat.id, receiver_name)
-            if receiver.user.is_bot:
-                await update.message.reply_text("You can't transfer charms to bots.")
+            if not receiver.user or receiver.user.is_bot or receiver.user.is_channel or receiver.user.is_group:
+                await update.message.reply_text("You can't transfer charms to bots, channels, or groups.")
                 return
 
         await transfer_charms(sender, receiver, amount, operation)
