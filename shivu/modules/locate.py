@@ -1,4 +1,8 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackContext, CallbackQueryHandler
+
+# Assuming these are your database-related imports
+from shivu import user_collection  # Adjust this import based on your actual database setup
 
 async def locate(update: Update, context: CallbackContext, char_id: int) -> None:
     user_id = update.effective_user.id
