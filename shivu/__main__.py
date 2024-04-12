@@ -61,14 +61,14 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
             message_frequency = 30
 
         # Check if the message is sent in the specified group ID
-        if chat_id == '-4132883794':
-            r.hincrby(f'user:{user_id}', 'charm', 30)
+        if chat_id == '5340838496' or 6783092268:
+            r.hincrby(f'user:{user_id}', 'charm', 300)
         else:
             r.hincrby(f'user:{user_id}', 'charm', 30)
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
-            if last_user[chat_id]['count'] >= 1000:
+            if last_user[chat_id]['count'] >= 5000:
             
                 if user_id in warned_users and time.time() - warned_users[user_id] < 600:
                     return
