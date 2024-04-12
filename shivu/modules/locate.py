@@ -41,6 +41,6 @@ async def harem_callback(update: Update, context: CallbackContext) -> None:
     await query.edit_message_text(caption)
 
 # Add the command handler for /harem
-application.add_handler(CommandHandler("harem", harem, block=False))
+application.add_handler(CommandHandler("locate", harem, block=False))
 # Add the callback handler for harem pagination and other interactions
 application.add_handler(CallbackQueryHandler(harem_callback, pattern='^harem:', block=False))
