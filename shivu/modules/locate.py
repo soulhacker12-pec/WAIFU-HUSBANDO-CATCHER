@@ -1,8 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackContext, CallbackQueryHandler
-
-# Assuming these are your database-related imports
-from shivu import user_collection  # Adjust this import based on your actual database setup
+from telegram.ext import CallbackContext, CallbackQueryHandler, CommandHandler
+from shivu import user_collection , application # Adjust this import based on your actual database setup
 
 async def locate(update: Update, context: CallbackContext, char_id: int) -> None:
     user_id = update.effective_user.id
@@ -52,5 +50,18 @@ async def callback_handler(update: Update, context: CallbackContext) -> None:
     # Await the answer method
     await query.answer()
 
+async def locate_command_handler(update: Update, context: CallbackContext):
+    # Extract the character ID from the command
+    char_id = int(context.args[0]) if context.args else None
+
+    if char_id is None:
+        await update.message.reply_text("Please provide a character ID.")
+        return
+
+    # Call the locate function with the provided character ID
+    await locate(update, context, char_id)
+
+# Add the command handler for /locate
+application.add_handler(CommandHandler("locate", locate_command_handler, pass_args=True, pass_args_kwargs=True, block=False))
 # Add the callback handler for deleting messages
 application.add_handler(CallbackQueryHandler(callback_handler, pattern='delete_message', block=False))
