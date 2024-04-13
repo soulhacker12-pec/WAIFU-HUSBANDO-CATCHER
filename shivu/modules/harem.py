@@ -18,12 +18,18 @@ r = redis.Redis(
 )
 
 async def harem(update: Update, context: CallbackContext, page=0) -> None:
-    if update.callback_query:
-        user_id = update.callback_query.from_user.id
-        chat_id = update.callback_query.message.chat_id
-    else:
+    user_id = None
+    if update.inline_query and update.inline_query.from_user:
         user_id = update.inline_query.from_user.id
-        chat_id = update.inline_query.message.chat_id
+    elif update.effective_user:
+        user_id = update.effective_user.id
+    else:
+        # Handle the case where user_id is not available
+        if update.message:
+            await update.message.reply_text("User ID not available.")
+        elif update.callback_query and update.callback_query.message:
+            await update.callback_query.message.reply_text("User ID not available.")
+        return
 
     # Define a mapping dictionary for harem modes to rarity values
     harem_mode_mapping = {
@@ -51,10 +57,10 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         user = await user_collection.find_one({'id': user_id})
         if not user:
-            if update.callback_query:
-                await update.callback_query.answer("You Have Not Guessed any Characters Yet..")
+            if update.message:
+                await update.message.reply_text('You Have Not Guessed any Characters Yet..')
             else:
-                await context.bot.send_message(chat_id, 'You Have Not Guessed any Characters Yet..')
+                await update.callback_query.edit_message_text('You Have Not Guessed any Characters Yet..')
             return
 
         characters = sorted(user['characters'], key=lambda x: (x['anime'], x['id']))
@@ -107,39 +113,49 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
             except Exception as e:
                 await update.callback_query.answer(f"Error updating message: {e}")
     else:
-        if update.callback_query:
-            await update.callback_query.answer("Please set your harem mode first using /hmode command.")
+        if update.message:
+            await update.message.reply_text('Please set your harem mode first using /hmode command.')
         else:
-            await context.bot.send_message(chat_id, 'Please set your harem mode first using /hmode command.')
+            await update.callback_query.edit_message_text('Please set your harem mode first using /hmode command.')
 
     if 'favorites' in user and user['favorites']:
         fav_character_id = user['favorites'][0]
         fav_character = next((c for c in user['characters'] if c['id'] == fav_character_id), None)
 
         if fav_character and 'img_url' in fav_character:
-            if update.callback_query:
-                await update.callback_query.message.reply_photo(photo=fav_character['img_url'], parse_mode='HTML', caption=harem_message, reply_markup=reply_markup)
+            if update.message:
+                await update.message.reply_photo(photo=fav_character['img_url'], parse_mode='HTML', caption=harem_message, reply_markup=reply_markup)
             else:
-                if update.inline_query:
-                    await update.inline_query.answer(results=[], switch_pm_text=harem_message, switch_pm_parameter='help')
-                else:
-                    await context.bot.send_message(chat_id, harem_message, parse_mode='HTML', reply_markup=reply_markup)
+                if update.callback_query.message and update.callback_query.message.caption != harem_message:
+                    await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
         else:
-            if update.callback_query:
-                await update.callback_query.message.reply_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
+            if update.message:
+                await update.message.reply_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
             else:
-                if update.inline_query:
-                    await update.inline_query.answer(results=[], switch_pm_text=harem_message, switch_pm_parameter='help')
-                else:
-                    await context.bot.send_message(chat_id, harem_message, parse_mode='HTML', reply_markup=reply_markup)
+                if update.callback_query.message and update.callback_query.message.text != harem_message:
+                    await update.callback_query.edit_message_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
     else:
-        if update.callback_query:
-            await update.callback_query.message.reply_text("Your List is Empty :")
-        else:
-            if update.inline_query:
-                await update.inline_query.answer(results=[], switch_pm_text="Your List is Empty :")
+        if user['characters']:
+            random_character = random.choice(user['characters'])
+
+            if 'img_url' in random_character:
+                if update.message:
+                    await update.message.reply_photo(photo=random_character['img_url'], parse_mode='HTML', caption=harem_message, reply_markup=reply_markup)
+                else:
+                    if update.callback_query.message and update.callback_query.message.caption != harem_message:
+                        await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
             else:
-                await context.bot.send_message(chat_id, "Your List is Empty :")
+                if update.message:
+                    await update.message.reply_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
+                else:
+                    if update.callback_query.message and update.callback_query.message.text != harem_message:
+                        await update.callback_query.edit_message_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
+        else:
+            if update.message:
+                await update.message.reply_text("Your List is Empty :")
+            else:
+                if update.callback_query.message and update.callback_query.message.text != "Your List is Empty :":
+                    await update.callback_query.edit_message_text("Your List is Empty :")
 
 async def harem_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
