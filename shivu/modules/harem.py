@@ -159,10 +159,7 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
         [
             InlineKeyboardButton("💘 Valentine", callback_data="valentine"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
-        ],
-        [
-            InlineKeyboardButton("Back", callback_data="/hmode_back"),
-        ],
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = await update.message.reply_photo(
