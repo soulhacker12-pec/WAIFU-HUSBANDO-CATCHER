@@ -107,15 +107,14 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        # Edit the existing message or send a new message with navigation buttons
-        try:
-            if update.callback_query and update.callback_query.message:
-                await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
-            elif update.inline_query:
-                await update.inline_query.answer()
-                await update.inline_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
-        except Exception as e:
-            print(f"Error updating message: {e}")
+        if update.callback_query and update.callback_query.message:
+            try:
+                if harem_message:
+                    await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
+                else:
+                    await update.callback_query.edit_message_text("Error: Empty harem message.", parse_mode='HTML')
+            except Exception as e:
+                await update.callback_query.answer(f"Error updating message: {e}")
     else:
         if update.message:
             await update.message.reply_text('Please set your harem mode first using /hmode command.')
@@ -146,7 +145,8 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
                 if update.message:
                     await update.message.reply_photo(photo=random_character['img_url'], parse_mode='HTML', caption=harem_message, reply_markup=reply_markup)
                 else:
-                    if update.callback_query.message and update.callback_query.message.caption != harem_message:
+                    if update.callback_query.message and update.callback
+_query.message.caption != harem_message:
                         await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
             else:
                 if update.message:
