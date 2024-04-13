@@ -107,11 +107,15 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        if update.callback_query and update.callback_query.message:
-            try:
+        # Edit the existing message or send a new message with navigation buttons
+        try:
+            if update.callback_query and update.callback_query.message:
                 await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
-            except Exception as e:
-                await update.callback_query.answer(f"Error updating message: {e}")
+            elif update.inline_query:
+                await update.inline_query.answer()
+                await update.inline_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
+        except Exception as e:
+            print(f"Error updating message: {e}")
     else:
         if update.message:
             await update.message.reply_text('Please set your harem mode first using /hmode command.')
@@ -213,16 +217,11 @@ async def button(update: Update, context: CallbackContext) -> None:
 
     # Set hmode in Redis
     r.hset(f"{user_id}hmode", "rarity", data)
+    await query.answer()  # Await the query.answer() coroutine
+    await query.edit_message_caption(f"You set to {data}")
 
-    # Send a message confirming the hmode change
-    await query.answer()
-    await query.edit_message_caption(f"You set harem mode to {data}")
-
-    # Log the success message
-    print(f"Harem mode set to {data} for user {user_id}")
-
-application.add_handler(CommandHandler(["harem", "collection"], harem, block=False))
-harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
+application.add_handler(CommandHandler(["harem", "collection"], harem, pass_args=True))
+harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem:', pass_update_queue=True)
 application.add_handler(harem_handler)
 application.add_handler(CommandHandler("hmode", set_hmode))
 application.add_handler(CallbackQueryHandler(button))
