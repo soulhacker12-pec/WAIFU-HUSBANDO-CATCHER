@@ -177,6 +177,7 @@ async def button(update: Update, context: CallbackContext) -> None:
     data = query.data
 
     if data == "back":
+        await query.answer()  # Acknowledge the callback
         await set_hmode(update, context)
     else:
         # Set hmode in Redis
