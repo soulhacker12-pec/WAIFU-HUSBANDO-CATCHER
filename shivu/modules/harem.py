@@ -161,22 +161,24 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
     keyboard = [
         [
-            InlineKeyboardButton("⚪ Common", callback_data="common"),
-            InlineKeyboardButton("🟣 Rare", callback_data="rare"),
-            InlineKeyboardButton("🟡 Legendary", callback_data="legendary"),
+            InlineKeyboardButton("⌠⚪⌡", callback_data="common"),
+            InlineKeyboardButton("⌠🟣⌡", callback_data="rare"),
+            InlineKeyboardButton("⌠🟢⌡", callback_data="medium"),
+        ],
+        
+        [
+           
+            InlineKeyboardButton("⌠🟡⌡", callback_data="legendary"),
+            InlineKeyboardButton("⌠🎄⌡", callback_data="christmas"),
+            InlineKeyboardButton("⌠💘⌡", callback_data="valentine"),
         ],
         [
-            InlineKeyboardButton("🟢 Medium", callback_data="medium"),
-            InlineKeyboardButton("💮 Exclusive", callback_data="exclusive"),
-            InlineKeyboardButton("🫧 Special Edition", callback_data="special_edition"),
+            InlineKeyboardButton("⌠💮⌡ ", callback_data="exclusive"),
+            InlineKeyboardButton("⌠🫧⌡", callback_data="special_edition"),
+            InlineKeyboardButton("⌠🔮⌡ ", callback_data="limited_edition"),
+            
         ],
         [
-            InlineKeyboardButton("🔮 Limited Edition", callback_data="limited_edition"),
-            InlineKeyboardButton("🎐 Celestial", callback_data="celestial"),
-            InlineKeyboardButton("🎄 Christmas", callback_data="christmas"),
-        ],
-        [
-            InlineKeyboardButton("💘 Valentine", callback_data="valentine"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
         ],
     ]
