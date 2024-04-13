@@ -20,60 +20,85 @@ r = redis.Redis(
 async def harem(update: Update, context: CallbackContext, page=0) -> None:
     user_id = update.effective_user.id
 
-    user = await user_collection.find_one({'id': user_id})
-    if not user:
+    # Define a mapping dictionary for harem modes to rarity values
+    harem_mode_mapping = {
+        "common": "⚪ Common",
+        "rare": "🟣 Rare",
+        "legendary": "🟡 Legendary",
+        "medium": "🟢 Medium",
+        "exclusive": "💮 Exclusive",
+        "special_edition": "🫧 Special Edition",
+        "limited_edition": "🔮 Limited Edition",
+        "celestial": "🎐 Celestial",
+        "christmas": "🎄 Christmas",
+        "valentine": "💘 Valentine",
+        "x_valentine": "💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚",
+    }
+
+    # Retrieve the harem mode from Redis
+    hmode_key = f"{user_id}hmode"
+    hmode = r.hget(hmode_key, "rarity").decode("utf-8") if r.exists(hmode_key) else None
+
+    if hmode:
+        # Map harem mode to rarity value
+        rarity_value = harem_mode_mapping.get(hmode, "Unknown Rarity")
+
+        user = await user_collection.find_one({'id': user_id})
+        if not user:
+            if update.message:
+                await update.message.reply_text('You Have Not Guessed any Characters Yet..')
+            else:
+                await update.callback_query.edit_message_text('You Have Not Guessed any Characters Yet..')
+            return
+
+        characters = sorted(user['characters'], key=lambda x: (x['anime'], x['id']))
+
+        character_counts = {k: len(list(v)) for k, v in groupby(characters, key=lambda x: x['id'])}
+
+        # Filter characters based on rarity
+        hmode_characters = [char for char in characters if char['rarity'] == rarity_value]
+
+        unique_characters = list({character['id']: character for character in hmode_characters}.values())
+
+        total_pages = math.ceil(len(unique_characters) / 15)
+
+        if page < 0 or page >= total_pages:
+            page = 0
+
+        harem_message = f"<b>{escape(update.effective_user.first_name)}'s {rarity_value} Harem - Page {page+1}/{total_pages}</b>\n"
+
+        current_characters = unique_characters[page*15:(page+1)*15]
+
+        current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
+
+        for anime, characters in current_grouped_characters.items():
+            harem_message += f'\n\n<b>⌬ {anime} 〔{len(characters)}/{await collection.count_documents({"anime": anime})}〕</b>\n'
+
+            for character in characters:
+                count = character_counts[character['id']]
+                harem_message += f'\n➥ <b>˹{character["id"]}˼</b> | ◈ ⌠{character["rarity"][0]}⌡ | {character["name"]} ×{count}'
+
+        total_count = len(user['characters'])
+
+        keyboard = [[InlineKeyboardButton(f"See Collection ({total_count})", switch_inline_query_current_chat=f"collection.{user_id}")]]
+
+        if total_pages > 1:
+            nav_buttons = []
+            if page > 0:
+                nav_buttons.append(InlineKeyboardButton("⬅️", callback_data=f"harem:{page-1}:{user_id}"))
+            if page < total_pages - 1:
+                nav_buttons.append(InlineKeyboardButton("➡️", callback_data=f"harem:{page+1}:{user_id}"))
+            keyboard.append(nav_buttons)
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        if update.callback_query.message.caption != harem_message:
+            await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
+    else:
         if update.message:
-            await update.message.reply_text('You Have Not Guessed any Characters Yet..')
+            await update.message.reply_text('Please set your harem mode first using /hmode command.')
         else:
-            await update.callback_query.edit_message_text('You Have Not Guessed any Characters Yet..')
-        return
-
-    characters = sorted(user['characters'], key=lambda x: (x['anime'], x['id']))
-
-    character_counts = {k: len(list(v)) for k, v in groupby(characters, key=lambda x: x['id'])}
-
-    
-    unique_characters = list({character['id']: character for character in characters}.values())
-
-    
-    total_pages = math.ceil(len(unique_characters) / 15)  
-
-    if page < 0 or page >= total_pages:
-        page = 0  
-
-    harem_message = f"<b>{escape(update.effective_user.first_name)}'s Harem - Page {page+1}/{total_pages}</b>\n"
-
-    
-    current_characters = unique_characters[page*15:(page+1)*15]
-
-    
-    current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
-
-    for anime, characters in current_grouped_characters.items():
-        harem_message += f'\n\n<b>⌬ {anime} 〔{len(characters)}/{await collection.count_documents({"anime": anime})}〕</b>\n'
-
-        for character in characters:
-            
-            count = character_counts[character['id']]
-            harem_message += f'\n➥ <b>˹{character["id"]}˼</b> | ◈ ⌠{character["rarity"][0]}⌡ | {character["name"]} ×{count}'
-           
-
-
-    total_count = len(user['characters'])
-    
-    keyboard = [[InlineKeyboardButton(f"See Collection ({total_count})", switch_inline_query_current_chat=f"collection.{user_id}")]]
-
-
-    if total_pages > 1:
-        
-        nav_buttons = []
-        if page > 0:
-            nav_buttons.append(InlineKeyboardButton("⬅️", callback_data=f"harem:{page-1}:{user_id}"))
-        if page < total_pages - 1:
-            nav_buttons.append(InlineKeyboardButton("➡️", callback_data=f"harem:{page+1}:{user_id}"))
-        keyboard.append(nav_buttons)
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
+            await update.callback_query.edit_message_text('Please set your harem mode first using /hmode command.')
 
     if 'favorites' in user and user['favorites']:
         
