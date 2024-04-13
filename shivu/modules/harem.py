@@ -136,13 +136,13 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
                 if update.message:
                     await update.message.reply_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
                 else:
-                
                     if update.callback_query.message.text != harem_message:
                         await update.callback_query.edit_message_text(harem_message, parse_mode='HTML', reply_markup=reply_markup)
         else:
             if update.message:
                 await update.message.reply_text("Your List is Empty :)")
-
+            else:
+                await update.callback_query.edit_message_text("Your List is Empty :)")
 
 async def harem_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
