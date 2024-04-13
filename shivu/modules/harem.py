@@ -78,7 +78,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
             for character in characters:
                 count = character_counts[character['id']]
                 # Format the ID with leading zeros if it's less than four digits
-                formatted_id = f"{character['id']:04d}"
+                formatted_id = f"{int(character['id']):04d}"
                 harem_message += f'\n➥ <b>˹{formatted_id}˼</b> | ◈ ⌠{character["rarity"][0]}⌡ | {character["name"]} ×{count}'
 
         total_count = len(user['characters'])
