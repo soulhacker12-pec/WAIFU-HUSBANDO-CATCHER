@@ -40,7 +40,6 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
     # Retrieve the harem mode from Redis
     hmode_key = f"{user_id}hmode"
     hmode = r.hget(hmode_key, "rarity").decode("utf-8") if r.exists(hmode_key) else None
-
     if hmode:
         # Map harem mode to rarity value
         rarity_value = harem_mode_mapping.get(hmode, "Unknown Rarity")
@@ -83,7 +82,6 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
         harem_message += f'\n➥ <b>˹{formatted_id}˼</b> | ◈ ⌠{character["rarity"][0]}⌡ | {character["name"]} ×{count}'
 
         total_count = len(user['characters'])
-
         keyboard = [[InlineKeyboardButton(f"See Collection ({total_count})", switch_inline_query_current_chat=f"collection.{user_id}")]]
 
         if total_pages > 1:
