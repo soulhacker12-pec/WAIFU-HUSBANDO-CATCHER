@@ -33,6 +33,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
         "christmas": "🎄 Christmas",
         "valentine": "💘 Valentine",
         "x_valentine": "💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚",
+        "default": "All Characters"  # Default mode
     }
 
     # Retrieve the harem mode from Redis
@@ -55,8 +56,11 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         character_counts = {k: len(list(v)) for k, v in groupby(characters, key=lambda x: x['id'])}
 
-        # Filter characters based on rarity
-        hmode_characters = [char for char in characters if char['rarity'] == rarity_value]
+        if hmode == "default":
+            hmode_characters = characters  # Display all characters
+        else:
+            # Filter characters based on rarity
+            hmode_characters = [char for char in characters if char['rarity'] == rarity_value]
 
         unique_characters = list({character['id']: character for character in hmode_characters}.values())
 
@@ -177,6 +181,9 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
             InlineKeyboardButton("💘 Valentine", callback_data="valentine"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
         ],
+        [
+            InlineKeyboardButton("DEFAULT", callback_data="default"),  # Default mode added here
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = await update.message.reply_photo(
