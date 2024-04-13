@@ -92,7 +92,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        if update.callback_query.message and update.callback_query.message.caption != harem_message:
+        if update.callback_query and update.callback_query.message and update.callback_query.message.caption != harem_message:
             await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
     else:
         if update.message:
