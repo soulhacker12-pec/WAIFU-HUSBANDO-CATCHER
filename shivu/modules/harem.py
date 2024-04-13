@@ -8,6 +8,14 @@ from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from shivu import collection, user_collection, application
+import redis
+
+# Redis connection setup
+r = redis.Redis(
+    host='redis-13192.c282.east-us-mz.azure.cloud.redislabs.com',
+    port=13192,
+    password='wKgGC52NC9NRhic36fDIvWh76dngPvP9'
+)
 
 async def harem(update: Update, context: CallbackContext, page=0) -> None:
     user_id = update.effective_user.id
@@ -131,7 +139,50 @@ async def harem_callback(update: Update, context: CallbackContext) -> None:
     await harem(update, context, page)
 
 
+async def set_hmode(update: Update, context: CallbackContext) -> None:
+    user_id = update.effective_user.id
+    keyboard = [
+        [
+            InlineKeyboardButton("⚪ Common", callback_data="common"),
+            InlineKeyboardButton("🟣 Rare", callback_data="rare"),
+            InlineKeyboardButton("🟡 Legendary", callback_data="legendary"),
+        ],
+        [
+            InlineKeyboardButton("🟢 Medium", callback_data="medium"),
+            InlineKeyboardButton("💮 Exclusive", callback_data="exclusive"),
+            InlineKeyboardButton("🫧 Special Edition", callback_data="special_edition"),
+        ],
+        [
+            InlineKeyboardButton("🔮 Limited Edition", callback_data="limited_edition"),
+            InlineKeyboardButton("🎐 Celestial", callback_data="celestial"),
+            InlineKeyboardButton("🎄 Christmas", callback_data="christmas"),
+        ],
+        [
+            InlineKeyboardButton("💘 Valentine", callback_data="valentine"),
+            InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
+        ],
+        [
+            InlineKeyboardButton("Back", callback_data="back"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_photo(
+        photo="https://telegra.ph/file/d7b82b55e6bc6d6fcf58b.jpg",
+        caption="Set your harem mode:",
+        reply_markup=reply_markup,
+    )
 
+async def button(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    user_id = query.from_user.id
+    data = query.data
+
+    if data == "back":
+        await set_hmode(update, context)
+    else:
+        # Set hmode in Redis
+        r.hset(f"{user_id}hmode", "rarity", data)
+        await query.edit_message_text(f"You set to {data}")
 
 application.add_handler(CommandHandler(["harem", "collection"], harem,block=False))
 harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
