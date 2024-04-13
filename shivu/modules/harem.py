@@ -18,18 +18,7 @@ r = redis.Redis(
 )
 
 async def harem(update: Update, context: CallbackContext, page=0) -> None:
-    user_id = None
-    if update.inline_query and update.inline_query.from_user:
-        user_id = update.inline_query.from_user.id
-    elif update.effective_user:
-        user_id = update.effective_user.id
-    else:
-        # Handle the case where user_id is not available
-        if update.message:
-            await update.message.reply_text("User ID not available.")
-        elif update.callback_query and update.callback_query.message:
-            await update.callback_query.message.reply_text("User ID not available.")
-        return
+    user_id = update.effective_user.id
 
     # Define a mapping dictionary for harem modes to rarity values
     harem_mode_mapping = {
@@ -44,7 +33,6 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
         "christmas": "🎄 Christmas",
         "valentine": "💘 Valentine",
         "x_valentine": "💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚",
-        "default": "All Characters"  # Default mode
     }
 
     # Retrieve the harem mode from Redis
@@ -67,11 +55,8 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         character_counts = {k: len(list(v)) for k, v in groupby(characters, key=lambda x: x['id'])}
 
-        if hmode == "default":
-            hmode_characters = characters  # Display all characters
-        else:
-            # Filter characters based on rarity
-            hmode_characters = [char for char in characters if char['rarity'] == rarity_value]
+        # Filter characters based on rarity
+        hmode_characters = [char for char in characters if char['rarity'] == rarity_value]
 
         unique_characters = list({character['id']: character for character in hmode_characters}.values())
 
@@ -109,10 +94,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         if update.callback_query and update.callback_query.message:
             try:
-                if harem_message:
-                    await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
-                else:
-                    await update.callback_query.edit_message_text("Error: Empty harem message.", parse_mode='HTML')
+                await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
             except Exception as e:
                 await update.callback_query.answer(f"Error updating message: {e}")
     else:
@@ -145,8 +127,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
                 if update.message:
                     await update.message.reply_photo(photo=random_character['img_url'], parse_mode='HTML', caption=harem_message, reply_markup=reply_markup)
                 else:
-                    if update.callback_query.message and update.callback
-_query.message.caption != harem_message:
+                    if update.callback_query.message and update.callback_query.message.caption != harem_message:
                         await update.callback_query.edit_message_caption(caption=harem_message, reply_markup=reply_markup, parse_mode='HTML')
             else:
                 if update.message:
@@ -157,24 +138,24 @@ _query.message.caption != harem_message:
         else:
             if update.message:
                 await update.message.reply_text("Your List is Empty :")
-            else:
-                if update.callback_query.message and update.callback_query.message.text != "Your List is Empty :":
-                    await update.callback_query.edit_message_text("Your List is Empty :")
 
 async def harem_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     data = query.data
 
+
     _, page, user_id = data.split(':')
+
+
     page = int(page)
     user_id = int(user_id)
 
+    
     if query.from_user.id != user_id:
-        await query.answer("It's Not Your Harem", show_alert=True)
+        await query.answer("its Not Your Harem", show_alert=True)
         return
 
-    await query.answer()  # Await the answer coroutine
-
+    
     await harem(update, context, page)
 
 async def set_hmode(update: Update, context: CallbackContext) -> None:
@@ -199,9 +180,6 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
             InlineKeyboardButton("💘 Valentine", callback_data="valentine"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
         ],
-        [
-            InlineKeyboardButton("DEFAULT", callback_data="default"),  # Default mode added here
-        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = await update.message.reply_photo(
@@ -217,11 +195,10 @@ async def button(update: Update, context: CallbackContext) -> None:
 
     # Set hmode in Redis
     r.hset(f"{user_id}hmode", "rarity", data)
-    await query.answer()  # Await the query.answer() coroutine
     await query.edit_message_caption(f"You set to {data}")
 
-application.add_handler(CommandHandler(["harem", "collection"], harem))
-harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem:')
+application.add_handler(CommandHandler(["harem", "collection"], harem,block=False))
+harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
 application.add_handler(harem_handler)
 application.add_handler(CommandHandler("hmode", set_hmode))
 application.add_handler(CallbackQueryHandler(button))
