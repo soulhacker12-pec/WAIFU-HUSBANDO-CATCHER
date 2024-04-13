@@ -71,14 +71,16 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         current_characters = unique_characters[page*10:(page+1)*10]
 
-        current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])}
+        current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])} 
 
         for anime, characters in current_grouped_characters.items():
-            harem_message += f'\n\n<b>⌬ {anime} 〔{len(characters)}/{await collection.count_documents({"anime": anime})}〕</b>\n'
+    harem_message += f'\n\n<b>⌬ {anime} 〔{len(characters)}/{await collection.count_documents({"anime": anime})}〕</b>\n'
 
-            for character in characters:
-                count = character_counts[character['id']]
-                harem_message += f'\n➥ <b>˹{character["id"]}˼</b> | ◈ ⌠{character["rarity"][0]}⌡ | {character["name"]} ×{count}'
+    for character in characters:
+        count = character_counts[character['id']]
+        # Format the ID with leading zeros if it's less than four digits
+        formatted_id = f"{character['id']:04d}"
+        harem_message += f'\n➥ <b>˹{formatted_id}˼</b> | ◈ ⌠{character["rarity"][0]}⌡ | {character["name"]} ×{count}'
 
         total_count = len(user['characters'])
 
