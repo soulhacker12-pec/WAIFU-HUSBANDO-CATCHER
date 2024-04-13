@@ -220,8 +220,8 @@ async def button(update: Update, context: CallbackContext) -> None:
     await query.answer()  # Await the query.answer() coroutine
     await query.edit_message_caption(f"You set to {data}")
 
-application.add_handler(CommandHandler(["harem", "collection"], harem, pass_args=True))
-harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem:', pass_update_queue=True)
+application.add_handler(CommandHandler(["harem", "collection"], harem))
+harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem:')
 application.add_handler(harem_handler)
 application.add_handler(CommandHandler("hmode", set_hmode))
 application.add_handler(CallbackQueryHandler(button))
