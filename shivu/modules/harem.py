@@ -170,11 +170,6 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
         caption="Set your harem mode:",
         reply_markup=reply_markup,
     )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message.caption,
-        reply_markup=reply_markup,
-    )
 
 async def button(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
@@ -186,7 +181,7 @@ async def button(update: Update, context: CallbackContext) -> None:
     else:
         # Set hmode in Redis
         r.hset(f"{user_id}hmode", "rarity", data)
-        await query.edit_message_caption(f"You set to {data}", reply_markup=None)
+        await query.edit_message_caption(f"You set to {data}")
         keyboard = [
             [
                 InlineKeyboardButton("Back", callback_data="back"),
@@ -201,6 +196,5 @@ async def button(update: Update, context: CallbackContext) -> None:
 application.add_handler(CommandHandler(["harem", "collection"], harem,block=False))
 harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
 application.add_handler(harem_handler)
-application.add_handler(CommandHandler("hmode", set_hmode, block=False))
-application.add_handler(CallbackQueryHandler(button, pattern='^(common|rare|legendary|medium|exclusive|special_edition|limited_edition|celestial|christmas|valentine|x_valentine|back)$'))
-
+application.add_handler(CommandHandler("hmode", set_hmode))
+application.add_handler(CallbackQueryHandler(button))
