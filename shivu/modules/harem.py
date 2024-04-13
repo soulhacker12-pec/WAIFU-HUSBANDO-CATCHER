@@ -179,7 +179,6 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
             
         ],
         [
-          
             InlineKeyboardButton("˹ 🎐 ˼ ℭ𝔢𝔩𝔢𝔰𝔱𝔦𝔞𝔩", callback_data="celestial"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
         ],
@@ -190,7 +189,6 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
         caption="Set your harem mode:",
         reply_markup=reply_markup,
     )
-
 async def button(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     user_id = query.from_user.id
