@@ -159,7 +159,7 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
         [
             InlineKeyboardButton("💘 Valentine", callback_data="valentine"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
-        ]
+        ],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     message = await update.message.reply_photo(
@@ -173,14 +173,10 @@ async def button(update: Update, context: CallbackContext) -> None:
     user_id = query.from_user.id
     data = query.data
 
-    if data == "/hmode_back":
-        await query.answer()  # Acknowledge the callback
-        await set_hmode(update, context)
-    else:
-        # Set hmode in Redis
-        r.hset(f"{user_id}hmode", "rarity", data)
-        await query.edit_message_caption(f"You set to {data}")
-        
+    # Set hmode in Redis
+    r.hset(f"{user_id}hmode", "rarity", data)
+    await query.edit_message_caption(f"You set to {data}")
+
 application.add_handler(CommandHandler(["harem", "collection"], harem,block=False))
 harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
 application.add_handler(harem_handler)
