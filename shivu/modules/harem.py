@@ -19,7 +19,9 @@ r = redis.Redis(
 
 async def harem(update: Update, context: CallbackContext, page=0) -> None:
     user_id = update.effective_user.id
+    user = None  # Initialize user variable
 
+   
     # Define a mapping dictionary for harem modes to rarity values
     harem_mode_mapping = {
         "common": "⚪ Common",
