@@ -169,19 +169,16 @@ async def harem_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     data = query.data
 
-
     _, page, user_id = data.split(':')
-
-
     page = int(page)
     user_id = int(user_id)
 
-    
     if query.from_user.id != user_id:
-        await query.answer("its Not Your Harem", show_alert=True)
+        await query.answer("It's Not Your Harem", show_alert=True)
         return
 
-    
+    await query.answer()  # Await the answer coroutine
+
     await harem(update, context, page)
 
 async def set_hmode(update: Update, context: CallbackContext) -> None:
