@@ -213,8 +213,13 @@ async def button(update: Update, context: CallbackContext) -> None:
 
     # Set hmode in Redis
     r.hset(f"{user_id}hmode", "rarity", data)
-    await query.answer()  # Await the query.answer() coroutine
-    await query.edit_message_caption(f"You set to {data}")
+
+    # Send a message confirming the hmode change
+    await query.answer()
+    await query.edit_message_caption(f"You set harem mode to {data}")
+
+    # Log the success message
+    print(f"Harem mode set to {data} for user {user_id}")
 
 application.add_handler(CommandHandler(["harem", "collection"], harem, block=False))
 harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
