@@ -179,6 +179,8 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
             
         ],
         [
+          
+            InlineKeyboardButton("˹ 🎐 ˼ ℭ𝔢𝔩𝔢𝔰𝔱𝔦𝔞𝔩", callback_data="celestial"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
         ],
     ]
