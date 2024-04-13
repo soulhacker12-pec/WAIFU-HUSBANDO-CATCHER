@@ -187,4 +187,6 @@ async def button(update: Update, context: CallbackContext) -> None:
 application.add_handler(CommandHandler(["harem", "collection"], harem,block=False))
 harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
 application.add_handler(harem_handler)
-    
+application.add_handler(CommandHandler("hmode", set_hmode, block=False))
+application.add_handler(CallbackQueryHandler(button, pattern='^(common|rare|legendary|medium|exclusive|special_edition|limited_edition|celestial|christmas|valentine|x_valentine|back)$'))
+
