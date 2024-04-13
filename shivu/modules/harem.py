@@ -143,19 +143,16 @@ async def harem_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     data = query.data
 
-
     _, page, user_id = data.split(':')
-
-
     page = int(page)
     user_id = int(user_id)
 
-    
     if query.from_user.id != user_id:
-        await query.answer("its Not Your Harem", show_alert=True)
+        await query.answer("It's Not Your Harem", show_alert=True)
         return
 
-    
+    await query.answer()  # Await the answer coroutine
+
     await harem(update, context, page)
 
 async def set_hmode(update: Update, context: CallbackContext) -> None:
@@ -195,9 +192,10 @@ async def button(update: Update, context: CallbackContext) -> None:
 
     # Set hmode in Redis
     r.hset(f"{user_id}hmode", "rarity", data)
+    await query.answer()  # Await the query.answer() coroutine
     await query.edit_message_caption(f"You set to {data}")
 
-application.add_handler(CommandHandler(["harem", "collection"], harem,block=False))
+application.add_handler(CommandHandler(["harem", "collection"], harem, block=False))
 harem_handler = CallbackQueryHandler(harem_callback, pattern='^harem', block=False)
 application.add_handler(harem_handler)
 application.add_handler(CommandHandler("hmode", set_hmode))
