@@ -1,9 +1,24 @@
-import redis
-from telegram import Update
+import os
 import random
-from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
+import html
 
-from shivu import application 
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackContext
+
+
+from shivu import shivuu
+from shivu import (application, PHOTO_URL, OWNER_ID,
+                    user_collection, top_global_groups_collection, top_global_groups_collection, 
+                    group_user_totals_collection)
+
+from shivu import sudo_users as SUDO_USERS 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CallbackQueryHandler
+from telegram.ext import *
+
 
 # Redis connection setup
 r = redis.Redis(
