@@ -1,4 +1,4 @@
-import os
+"""import os
 import random
 import html
 
@@ -86,3 +86,4 @@ async def button(update: Update, context: CallbackContext):
 # Add the command and callback handlers
 application.add_handler(CommandHandler('tops', tops, block=False))
 application.add_handler(CallbackQueryHandler(button))
+"""
