@@ -1,6 +1,8 @@
 import redis
 from telegram import Update
-from telegram.ext import CommandHandler, CallbackContext
+
+from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
+
 from shivu import application 
 
 # Redis connection setup
