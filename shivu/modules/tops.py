@@ -1,6 +1,6 @@
 import redis
 from telegram import Update
-
+import random
 from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
 
 from shivu import application 
