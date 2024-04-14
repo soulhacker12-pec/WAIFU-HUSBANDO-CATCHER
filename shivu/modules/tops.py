@@ -7,7 +7,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext
-
+import redis
 
 from shivu import shivuu
 from shivu import (application, PHOTO_URL, OWNER_ID,
