@@ -76,7 +76,8 @@ async def refresh(update: Update, context: CallbackContext) -> None:
 
     await update.message.reply_text('Harem messages prepared for all rarities.')
 
-  async def rharem(update: Update, context: CallbackContext, rarity_number: int) -> None:
+
+async def rharem(update: Update, context: CallbackContext, rarity_number: int) -> None:
     user_id = update.effective_user.id
     # Load harem messages for the user (replace this with your actual loading logic)
     harem_messages = load_harem_messages(user_id)
@@ -105,6 +106,7 @@ async def refresh(update: Update, context: CallbackContext) -> None:
     context.user_data['rharem_message_id'] = message.message_id
     context.user_data['rharem_rarity'] = rarity_number
     context.user_data['rharem_current_page'] = page
+
 
 async def rharem_next(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
@@ -140,9 +142,10 @@ async def rharem_next(update: Update, context: CallbackContext) -> None:
     await update.callback_query.answer()
     await update.callback_query.edit_message_text(harem_message_page, parse_mode='HTML', reply_markup=reply_markup)
 
-# Add command and callback query handler
+
 # Add command handlers
 application.add_handler(CommandHandler("refresh", refresh))
-
 application.add_handler(CommandHandler("rharem", rharem))
+
+# Add callback query handler for "rharem_next" pattern
 application.add_handler(CallbackQueryHandler(rharem_next, pattern=r'^rharem_next'))
