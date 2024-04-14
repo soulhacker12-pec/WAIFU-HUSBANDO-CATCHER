@@ -6,7 +6,7 @@ class Config(object):
     sudo_users = "5162659136",5162659136,"6447641540","1782205703",1782205703,"1470441905","5746762799","6616253205","6783092268","2016154439","1861645831","666686141","6666861412",6666861412,6999153738,6616253205
     GROUP_ID = -1002073720399
     TOKEN = "6802425596:AAEN6NJCn_1y49lOLf8l07vfpjVQXtbIAo0"
-    mongo_url = "mongodb+srv://zhuofan21001:9Bpb5voEiKYcnUQm@cluster0.mibzqh9.mongodb.net/?retryWrites=true&w=majority"
+    mongo_url = "mongodb+srv://masterZB:5pLoJz2hyHoB19O8@cluster0.mibzqh9.mongodb.net/?retryWrites=true&w=majority"
     PHOTO_URL = ["https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg","https://te.legra.ph/file/9f81d51fcc0cf0284a99f.jpg"]
     SUPPORT_CHAT = "PokemonUniteGC"
     UPDATE_CHAT = "chuTiyaSupport"
