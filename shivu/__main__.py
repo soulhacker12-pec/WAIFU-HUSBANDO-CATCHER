@@ -64,7 +64,7 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         if chat_id ==  6783092268:
             r.hincrby(f'user:{user_id}', 'charm', 100)
         else:
-            r.hincrby(f'user:{user_id}', 'charm', 30)
+            r.hincrby(f'user:{user_id}', 'charm', 100)
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
@@ -131,8 +131,8 @@ async def guess(update: Update, context: CallbackContext) -> None:
 
     user_info_key = f'user:{user_id}'
     if not r.exists(user_info_key):
-        r.hincrby(user_info_key, 'charm', 2000)
-        await update.message.reply_text('<b>You claimed <code>2000 </code>Charms</b>.', parse_mode='html')
+        r.hincrby(user_info_key, 'charm', 10000)
+        await update.message.reply_text('<b>You claimed <code>10000 </code>Charms</b>.', parse_mode='html')
 
     guess = ' '.join(context.args).lower() if context.args else ''
     
@@ -146,7 +146,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
         first_correct_guesses[chat_id] = user_id
 
         # Increment charms by 200 upon correct guess
-        r.hincrby(user_info_key, 'charm', 200)
+        r.hincrby(user_info_key, 'charm', 500)
 
         user = await user_collection.find_one({'id': user_id})
         if user:
