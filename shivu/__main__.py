@@ -64,7 +64,7 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         if chat_id ==  6783092268:
             r.hincrby(f'user:{user_id}', 'charm', 100)
         else:
-            r.hincrby(f'user:{user_id}', 'charm', 100)
+            r.hincrby(f'user:{user_id}', 'charm', 250)
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
