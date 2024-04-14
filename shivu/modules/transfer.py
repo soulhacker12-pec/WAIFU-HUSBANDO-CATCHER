@@ -24,6 +24,13 @@ async def update_charms(update: Update, context: CallbackContext, operation: str
             await update.message.reply_text('Please enter a positive amount.')
             return
 
+        sender_key = f'user:{sender.id}'
+        sender_charm_balance = int(r.hget(sender_key, 'charm') or 0)
+        
+        if sender_charm_balance < amount:
+            await update.message.reply_text('You do not have enough charms to perform this transfer.')
+            return
+
         # Check if there's a replied user
         if update.message.reply_to_message and update.message.reply_to_message.from_user:
             receiver = update.message.reply_to_message.from_user
