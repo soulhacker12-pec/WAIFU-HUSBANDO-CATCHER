@@ -61,7 +61,7 @@ async def spin(update: Update, context: CallbackContext) -> None:
             # Add the waifus obtained from spin to the user's collection
             await add_waifu_to_user(user_id, waifus)
 
-            reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: {waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n<b>˹✘˼ 𝐈𝐃</b>: {waifu["id"]}\n\n' for waifu in waifus])
+            reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n<b>˹✘˼ 𝐈𝐃</b>: {waifu["id"]}\n\n' for waifu in waifus])
             
             # Check if reply exceeds 4000 characters or more than 20 waifus
             if len(reply_message) > 4000:
