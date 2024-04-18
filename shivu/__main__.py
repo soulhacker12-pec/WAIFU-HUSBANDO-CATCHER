@@ -64,7 +64,7 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         if chat_id ==  6783092268:
             r.hincrby(f'user:{user_id}', 'charm', 100)
         else:
-            r.hincrby(f'user:{user_id}', 'charm', 250)
+            r.hincrby(f'user:{user_id}', 'charm', 10)
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
@@ -100,6 +100,10 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     if chat_id not in sent_characters:
         sent_characters[chat_id] = []
 
+    if chat_id in zen_dict:
+        del zen_dict[chat_id]
+        
+
     if len(sent_characters[chat_id]) == len(all_characters):
         sent_characters[chat_id] = []
 
@@ -114,7 +118,7 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     await context.bot.send_photo(
         chat_id=chat_id,
         photo=character['img_url'],
-        caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc [ɴᴀᴍᴇ]***""",
+        caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc || /s [ɴᴀᴍᴇ]***""",
         parse_mode='Markdown')
 
 
@@ -125,9 +129,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
     if chat_id not in last_characters:
         return
 
-    if chat_id in first_correct_guesses:
-        await update.message.reply_text(f'❌️ Already Guessed By Someone.. Try Next Time Bruhh ')
-        return
+        
 
     user_info_key = f'user:{user_id}'
     if not r.exists(user_info_key):
@@ -145,10 +147,14 @@ async def guess(update: Update, context: CallbackContext) -> None:
     if sorted(name_parts) == sorted(guess.split()) or any(part == guess for part in name_parts):
         first_correct_guesses[chat_id] = user_id
 
-        # Increment charms by 200 upon correct guess
-        r.hincrby(user_info_key, 'charm', 500)
+        # Increment charms by 50 upon correct guess
+        r.hincrby(user_info_key, 'charm', 50)
 
         user = await user_collection.find_one({'id': user_id})
+        
+        keyboard = [[InlineKeyboardButton(f" ⟭⟬ ᴄᴏɴᴄᴜʙɪɴᴇs", switch_inline_query_current_chat=f"collection.{user_id}")]]
+        await update.message.reply_text(f'<b><a href="tg://user?id={user_id}">{escape(update.effective_user.first_name)}</a></b> You Guessed a New Character ✅️ \n\n𝗡𝗔𝗠𝗘: <b>{last_characters[chat_id]["name"]}</b> \n𝗔𝗡𝗜𝗠𝗘: <b>{last_characters[chat_id]["anime"]}</b> \n𝗥𝗔𝗜𝗥𝗧𝗬: <b>{last_characters[chat_id]["rarity"]}</b>\n\nThis Character added in Your harem.. use /harem To see your harem', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard))
+
         if user:
             update_fields = {}
             if hasattr(update.effective_user, 'username') and update.effective_user.username != user.get('username'):
@@ -206,9 +212,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
                 'count': 1,
             })
 
-        keyboard = [[InlineKeyboardButton(f" ⟭⟬ ᴄᴏɴᴄᴜʙɪɴᴇs", switch_inline_query_current_chat=f"collection.{user_id}")]]
 
-        await update.message.reply_text(f'<b><a href="tg://user?id={user_id}">{escape(update.effective_user.first_name)}</a></b> You Guessed a New Character ✅️ \n\n𝗡𝗔𝗠𝗘: <b>{last_characters[chat_id]["name"]}</b> \n𝗔𝗡𝗜𝗠𝗘: <b>{last_characters[chat_id]["anime"]}</b> \n𝗥𝗔𝗜𝗥𝗧𝗬: <b>{last_characters[chat_id]["rarity"]}</b>\n\nThis Character added in Your harem.. use /harem To see your harem', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(keyboard))
         if chat_id in zen_dict:
             del zen_dict[chat_id]
             
@@ -253,7 +257,7 @@ async def store_character(update: Update, context: CallbackContext) -> None:
         return
 
     character_name = zen_dict[chat_id]  # Retrieve the stored name
-    del zen_dict[chat_id]  # Clear the entry after sending
+      # Clear the entry after sending
 
     await update.message.reply_text(f'<b>Character name</b>: <code>{character_name}</code>\n\n<b>Copy-String</b>: <code>/protecc {character_name}</code>',parse_mode='html') # Send the corrected message 
 
