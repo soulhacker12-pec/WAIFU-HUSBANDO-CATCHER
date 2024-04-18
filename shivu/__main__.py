@@ -139,7 +139,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
     guess = ' '.join(context.args).lower() if context.args else ''
     
     if "()" in guess or "&" in guess.lower():
-        await update.message.reply_text("Nahh You Can't use This Types of words in your guess..❌️")
+        await update.message.reply_text("You Can't use This Types of words in your guess..")
         return
 
     name_parts = last_characters[chat_id]['name'].lower().split()
@@ -217,7 +217,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
             del zen_dict[chat_id]
             
     else:
-        await update.message.reply_text('Please Write Correct Character Name... ❌️')
+        await update.message.reply_text('rip, that's not quite right...')
 
 async def fav(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
