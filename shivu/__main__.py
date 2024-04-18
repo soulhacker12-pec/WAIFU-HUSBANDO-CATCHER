@@ -148,7 +148,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
         first_correct_guesses[chat_id] = user_id
 
         # Increment charms by 50 upon correct guess
-        r.hincrby(user_info_key, 'charm', 50)
+        r.hincrby(user_info_key, 'charm', 500)
 
         user = await user_collection.find_one({'id': user_id})
         
