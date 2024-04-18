@@ -217,7 +217,7 @@ async def guess(update: Update, context: CallbackContext) -> None:
             del zen_dict[chat_id]
             
     else:
-        await update.message.reply_text('rip, that's not quite right...')
+        await update.message.reply_text('rip, that\'s not quite right...')
 
 async def fav(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_user.id
