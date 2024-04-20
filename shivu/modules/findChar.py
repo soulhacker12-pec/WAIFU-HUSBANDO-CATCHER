@@ -4,7 +4,7 @@ from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler
 from cachetools import TTLCache
 import asyncio
 import time
-from html import escape
+import uuid  # Import UUID to generate unique access keywords
 
 from shivu import user_collection, collection, application, db
 
@@ -38,11 +38,16 @@ async def find_command(update: Update, context: CallbackContext) -> None:
             found_ids = [char["id"] for char in found_characters]
             ids_text = ', '.join(f'<code>{char_id}</code>' for char_id in found_ids)
 
-            # Cache found IDs
-            found_ids_cache[update.message.chat_id] = found_ids
+            # Generate a unique access keyword for this search
+            access_keyword = str(uuid.uuid4())
+
+            # Cache found IDs with the unique access keyword
+            found_ids_cache[access_keyword] = found_ids
 
             # Create inline button to access cached IDs
-            inline_button = InlineKeyboardButton("Access IDs", callback_data="access_ids")
+            inline_button = InlineKeyboardButton(
+                "Access IDs", switch_inline_query_current_chat=f'access {access_keyword}'
+            )
             reply_markup = InlineKeyboardMarkup([[inline_button]])
 
             # Add inline button to found text
@@ -60,27 +65,18 @@ async def inline_query_handler(update: Update, context: CallbackContext) -> None
         query = update.inline_query.query
         offset = int(update.inline_query.offset) if update.inline_query.offset else 0
 
-        # Load 3 results per row
-        results_per_row = 4
-        results_per_page = 8
-
-        if query:
-            regex = {'$regex': query, '$options': 'i'}
-            all_characters = list(await collection.find({"$or": [{"name": regex}, {"anime": regex}]}).to_list(length=None))
-        else:
-            if 'all_characters' in all_characters_cache:
-                all_characters = all_characters_cache['all_characters']
+        if query.startswith('access'):
+            access_keyword = query.split()[1]
+            if access_keyword in found_ids_cache:
+                found_ids = found_ids_cache[access_keyword]
+                found_characters = await collection.find({"id": {"$in": found_ids}}).to_list(None)
             else:
-                all_characters = list(await collection.find({}).to_list(length=None))
-                all_characters_cache['all_characters'] = all_characters
-
-        # Slice the characters based on the current offset and results per page
-        characters = all_characters[offset:offset+results_per_page]
-
-        next_offset = offset + len(characters)
+                found_characters = []
+        else:
+            found_characters = []
 
         results = []
-        for character in characters:
+        for character in found_characters:
             global_count = await user_collection.count_documents({'characters.id': character['id']})
             anime_characters = await collection.count_documents({'anime': character['anime']})
 
@@ -98,7 +94,7 @@ async def inline_query_handler(update: Update, context: CallbackContext) -> None
                 )
             )
 
-        await update.inline_query.answer(results, next_offset=str(next_offset), cache_time=1)
+        await update.inline_query.answer(results, cache_time=2)
 
 FIND_HANDLER = CommandHandler('find', find_command, block=False)
 application.add_handler(FIND_HANDLER)
