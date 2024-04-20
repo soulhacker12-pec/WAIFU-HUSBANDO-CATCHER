@@ -59,4 +59,4 @@ async def find_command(update: Update, context: CallbackContext) -> None:
     except Exception as e:
         await update.message.reply_text(f'Error: {str(e)}')
 
-application.addhandler(CommandHandler("find",find_command)
+application.addhandler(CommandHandler("find",find_command, block="False"))
