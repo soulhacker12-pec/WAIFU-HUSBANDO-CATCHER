@@ -118,9 +118,9 @@ async def leaderboard(update: Update, context: CallbackContext) -> None:
     cursor = user_collection.aggregate([
         {"$project": {"username": 1, "first_name": 1, "character_count": {"$size": "$characters"}}},
         {"$sort": {"character_count": -1}},
-        {"$limit": 10}
+        {"$limit": 25}
     ])
-    leaderboard_data = await cursor.to_list(length=10)
+    leaderboard_data = await cursor.to_list(length=25)
 
     leaderboard_message = "<b>˹ιтz˼ | ◈ 🌍 gℓσвαℓ Rαηкєяѕ</b>\n\n┏━┅┅┄┄⟞⟦🌍⟧⟝┄┄┉┉━┓\n"
 
@@ -129,7 +129,7 @@ async def leaderboard(update: Update, context: CallbackContext) -> None:
         first_name = html.escape(user.get('first_name', 'Unknown'))
 
         if len(first_name) > 10:
-            first_name = first_name[:12] + '...'
+            first_name = first_name[:10] + '...'
         character_count = user['character_count']
         leaderboard_message += f'┣ {i}. <a href="https://t.me/{username}"><b>{first_name}</b></a> ➾ <code>{character_count}</code>\n'
         u178 = leaderboard_message + f'┗━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┛'
