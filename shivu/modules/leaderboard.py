@@ -24,7 +24,7 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
     cursor = top_global_groups_collection.aggregate([
         {"$project": {"group_name": 1, "count": 1}},
         {"$sort": {"count": -1}},
-        {"$limit": 10}
+        {"$limit": 20}
     ])
     leaderboard_data = await cursor.to_list(length=10)
 
