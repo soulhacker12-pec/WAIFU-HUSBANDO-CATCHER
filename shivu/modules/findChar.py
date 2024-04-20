@@ -12,7 +12,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 lock = asyncio.Lock()
 from shivu import user_collection, collection, application, db
 
-
 # Collection indexes
 collection.create_index([('id', DESCENDING)])
 collection.create_index([('anime', DESCENDING)])
@@ -24,7 +23,7 @@ user_collection.create_index([('characters.img_url', DESCENDING)])
 # TTL caches
 all_characters_cache = TTLCache(maxsize=10000, ttl=36000)
 user_collection_cache = TTLCache(maxsize=10000, ttl=60)
-
+found_ids_cache = TTLCache(maxsize=10000, ttl=3600)  # Define found_ids_cache
 
 # /find command handler
 async def find_command(update: Update, context: CallbackContext) -> None:
