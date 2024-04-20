@@ -23,7 +23,6 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
    
     # Define a mapping dictionary for harem modes to rarity values
-#Edit this i am Lazy.
     harem_mode_mapping = {
         "common": "⚪ Common",
         "rare": "🟣 Rare",
@@ -36,10 +35,8 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
         "christmas": "🎄 Christmas",
         "valentine": "💘 Valentine",
         "x_valentine": "💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚",
-        "18+": "🔞 NSFW", 
-        "default": "𝕯𝖊𝖋𝖆𝖚𝖑𝖙",
-        "cVal: "𝘾𝙊𝙎𝙋𝙇𝘼𝙔 [𝙇]"
-}
+        "18+": "🔞 NSFW"
+    }
 
     # Retrieve the harem mode from Redis
     hmode_key = f"{user_id}hmode"
@@ -72,7 +69,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
 
         harem_message = f"<b>{escape(update.effective_user.first_name)}'s {rarity_value} Harem - Page {page+1}/{total_pages}</b>\n"
 
-        current_characters = unique_characters[page*13:(page+1)*13]
+        current_characters = unique_characters[page*10:(page+1)*10]
 
         current_grouped_characters = {k: list(v) for k, v in groupby(current_characters, key=lambda x: x['anime'])} 
 
@@ -186,12 +183,6 @@ async def set_hmode(update: Update, context: CallbackContext) -> None:
             InlineKeyboardButton("˹ 🎐 ˼ ℭ𝔢𝔩𝔢𝔰𝔱𝔦𝔞𝔩", callback_data="celestial"),
             InlineKeyboardButton("💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚", callback_data="x_valentine"),
             InlineKeyboardButton("🔞 NSFW", callback_data="18+"),
-            
-           
-        ],
-        [
-            InlineKeyboardButton("𝕯𝖊𝖋𝖆𝖚𝖑𝖙", callback_data="default"),
-            InlineKeyboardButton("💋 𝘾𝙊𝙎𝙋𝙇𝘼𝙔 [𝙇]", callback_data="cVal"),
             
            
         ],
