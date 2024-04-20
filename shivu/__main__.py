@@ -129,6 +129,8 @@ async def guess(update: Update, context: CallbackContext) -> None:
     if chat_id not in last_characters:
         return
 
+    if chat_id in first_correct_guesses:
+        return
         
 
     user_info_key = f'user:{user_id}'
