@@ -147,7 +147,7 @@ async def leaderboard(update: Update, context: CallbackContext) -> None:
 
 async def button(update: Update, context: CallbackContext):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     if query.data == 'delete':
         # Delete the message using the stored message ID
         message_to_delete = context.user_data.get('message_to_delete')
