@@ -1,24 +1,40 @@
-from pymongo import TEXT
-from telegram import Update, InlineQueryResultPhoto, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler 
-from cachetools import TTLCache
-import asyncio
+import re
 import time
-import uuid  # Import UUID to generate unique access keywords
+from html import escape
+from cachetools import TTLCache
+from pymongo import MongoClient, DESCENDING
+import asyncio
 
-from shivu import user_collection, collection, application, db
+from telegram import Update, InlineQueryResultPhoto, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler, Updater
+
 
 # Define a lock for concurrency control
 lock = asyncio.Lock()
-# collection
-db.characters.create_index([('id', TEXT), ('anime', TEXT)], default_language='english')
-db.characters.create_index([('img_url', TEXT)])
+from shivu import user_collection, collection, application, db
+
+
+# Collection indexes
+collection.create_index([('id', DESCENDING)])
+collection.create_index([('anime', DESCENDING)])
+collection.create_index([('img_url', DESCENDING)])
+user_collection.create_index([('characters.id', DESCENDING)])
+user_collection.create_index([('characters.name', DESCENDING)])
+user_collection.create_index([('characters.img_url', DESCENDING)])
 
 # TTL caches
 all_characters_cache = TTLCache(maxsize=10000, ttl=36000)
 user_collection_cache = TTLCache(maxsize=10000, ttl=60)
-found_ids_cache = TTLCache(maxsize=1000, ttl=120)
 
+# Function to clear all caches
+def clear_all_caches():
+    all_characters_cache.clear()
+    user_collection_cache.clear()
+
+# Call the function to clear the caches
+clear_all_caches()
+
+# /find command handler
 async def find_command(update: Update, context: CallbackContext) -> None:
     try:
         args = context.args
@@ -38,16 +54,11 @@ async def find_command(update: Update, context: CallbackContext) -> None:
             found_ids = [char["id"] for char in found_characters]
             ids_text = ', '.join(f'<code>{char_id}</code>' for char_id in found_ids)
 
-            # Generate a unique access keyword for this search
-            access_keyword = str(uuid.uuid4())
-
-            # Cache found IDs with the unique access keyword
-            found_ids_cache[access_keyword] = found_ids
+            # Cache found IDs
+            found_ids_cache[update.message.chat_id] = found_ids
 
             # Create inline button to access cached IDs
-            inline_button = InlineKeyboardButton(
-                "Access IDs", switch_inline_query_current_chat=f'access {access_keyword}'
-            )
+            inline_button = InlineKeyboardButton("Access IDs", callback_data="access_ids")
             reply_markup = InlineKeyboardMarkup([[inline_button]])
 
             # Add inline button to found text
@@ -59,28 +70,35 @@ async def find_command(update: Update, context: CallbackContext) -> None:
     except Exception as e:
         await update.message.reply_text(f'Error: {str(e)}')
 
-
-async def inline_query_handler(update: Update, context: CallbackContext) -> None:
+# Inline query handler
+async def inlinequery(update: Update, context: CallbackContext) -> None:
     async with lock:
         query = update.inline_query.query
         offset = int(update.inline_query.offset) if update.inline_query.offset else 0
 
-        if query.startswith('access'):
-            access_keyword = query.split()[1]
-            if access_keyword in found_ids_cache:
-                found_ids = found_ids_cache[access_keyword]
-                found_characters = await collection.find({"id": {"$in": found_ids}}).to_list(None)
-            else:
-                found_characters = []
+        # Load characters from cache or database
+        if query:
+            regex = {'$regex': query, '$options': 'i'}
+            all_characters = list(await collection.find({"$or": [{"name": regex}, {"anime": regex}]}).to_list(length=None))
         else:
-            found_characters = []
+            if 'all_characters' in all_characters_cache:
+                all_characters = all_characters_cache['all_characters']
+            else:
+                all_characters = list(await collection.find({}).to_list(length=None))
+                all_characters_cache['all_characters'] = all_characters
+
+        # Slice the characters based on the current offset and results per page
+        characters = all_characters[offset:offset+8]
 
         results = []
-        for character in found_characters:
+        for character in characters:
             global_count = await user_collection.count_documents({'characters.id': character['id']})
-            anime_characters = await collection.count_documents({'anime': character['anime']})
 
-            caption = f"<b>Look At This Character !!</b>\n\n🌸:<b> {character['name']}</b>\n🏖️: <b>{character['anime']}</b>\n<b>{character['rarity']}</b>\n🆔️: <b>{character['id']}</b>\n\n<b>Globally Guessed {global_count} Times...</b>"
+            caption = f"<b>Look At This Character !!</b>\n\n🌸: <b>{character['name']}</b>\n🏖️: <b>{character['anime']}</b>\n<b>{character['rarity']}</b>\n🆔️: <b>{character['id']}</b>\n\n<b>Globally Guessed {global_count} Times...</b>"
+
+            # Create inline button to access IDs
+            inline_button = InlineKeyboardButton("Access IDs", callback_data=f"access_ids_{character['id']}")
+            reply_markup = InlineKeyboardMarkup([[inline_button]])
 
             results.append(
                 InlineQueryResultPhoto(
@@ -89,14 +107,26 @@ async def inline_query_handler(update: Update, context: CallbackContext) -> None
                     photo_url=character['img_url'],
                     caption=caption,
                     parse_mode='HTML',
-                    photo_width=300,  # Adjust the width as needed
-                    photo_height=300  # Adjust the height as needed
+                    photo_width=300,
+                    photo_height=300,
+                    reply_markup=reply_markup  # Include inline button in result
                 )
             )
 
-        await update.inline_query.answer(results, cache_time=1)
+        await update.inline_query.answer(results, cache_time=5)
 
-FIND_HANDLER = CommandHandler('find', find_command, block=False)
-application.add_handler(FIND_HANDLER)
+# Callback handler for accessing IDs
+def access_ids_callback(update: Update, context: CallbackContext) -> None:
+    chat_id = update.callback_query.message.chat_id
+    if chat_id in found_ids_cache:
+        found_ids = found_ids_cache[chat_id]
+        ids_text = ', '.join(f'<code>{char_id}</code>' for char_id in found_ids)
+        found_text = f"IDs of found characters: {ids_text}"
+        update.callback_query.message.reply_text(found_text, parse_mode='HTML')
+    else:
+        update.callback_query.message.reply_text("No cached IDs found.")
 
-application.add_handler(InlineQueryHandler(inline_query_handler, block=False))
+# Add handlers to dispatcher
+application.add_handler(CommandHandler('find', find_command))
+application.add_handler(InlineQueryHandler(inlinequery))
+application.add_handler(CallbackQueryHandler(access_ids_callback, pattern='^access_ids'))
