@@ -38,7 +38,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
         "x_valentine": "💋 [𝙓] 𝙑𝙚𝙧𝙨𝙚",
         "18+": "🔞 NSFW", 
         "default": "𝕯𝖊𝖋𝖆𝖚𝖑𝖙",
-        "cVal: "💋 𝘾𝙊𝙎𝙋𝙇𝘼𝙔 [𝙇]"
+        "cVal: "𝘾𝙊𝙎𝙋𝙇𝘼𝙔 [𝙇]"
 
  }
 
