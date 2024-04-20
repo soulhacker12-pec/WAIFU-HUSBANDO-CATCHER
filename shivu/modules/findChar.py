@@ -1,5 +1,5 @@
 from pymongo import TEXT
-from telegram import Update, InlineQueryResultPhoto
+from telegram import Update, InlineQueryResultPhoto, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler 
 from cachetools import TTLCache
 import asyncio
