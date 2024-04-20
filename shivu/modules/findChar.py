@@ -26,13 +26,6 @@ user_collection.create_index([('characters.img_url', DESCENDING)])
 all_characters_cache = TTLCache(maxsize=10000, ttl=36000)
 user_collection_cache = TTLCache(maxsize=10000, ttl=60)
 
-# Function to clear all caches
-def clear_all_caches():
-    all_characters_cache.clear()
-    user_collection_cache.clear()
-
-# Call the function to clear the caches
-clear_all_caches()
 
 # /find command handler
 async def find_command(update: Update, context: CallbackContext) -> None:
