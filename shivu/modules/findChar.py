@@ -5,7 +5,7 @@ from cachetools import TTLCache
 from pymongo import MongoClient, DESCENDING
 import asyncio
 from telegram import Update, InlineQueryResultPhoto
-from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler 
+from telegram.ext import InlineQueryHandler, CallbackContext, CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Define a lock for concurrency control
