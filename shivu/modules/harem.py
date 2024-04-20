@@ -39,8 +39,7 @@ async def harem(update: Update, context: CallbackContext, page=0) -> None:
         "18+": "🔞 NSFW", 
         "default": "𝕯𝖊𝖋𝖆𝖚𝖑𝖙",
         "cVal: "𝘾𝙊𝙎𝙋𝙇𝘼𝙔 [𝙇]"
-
- }
+}
 
     # Retrieve the harem mode from Redis
     hmode_key = f"{user_id}hmode"
