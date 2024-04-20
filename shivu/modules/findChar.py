@@ -98,7 +98,7 @@ async def inline_query_handler(update: Update, context: CallbackContext) -> None
                 )
             )
 
-        await update.inline_query.answer(results, next_offset=str(next_offset), cache_time=5)
+        await update.inline_query.answer(results, next_offset=str(next_offset), cache_time=1)
 
 FIND_HANDLER = CommandHandler('find', find_command, block=False)
 application.add_handler(FIND_HANDLER)
