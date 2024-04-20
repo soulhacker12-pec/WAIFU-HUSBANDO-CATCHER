@@ -26,7 +26,7 @@ async def global_leaderboard(update: Update, context: CallbackContext) -> None:
         {"$sort": {"count": -1}},
         {"$limit": 20}
     ])
-    leaderboard_data = await cursor.to_list(length=10)
+    leaderboard_data = await cursor.to_list(length=20)
 
     leaderboard_message = "<b> ˹ιтz˼ | ◈ 🌍 gℓσвαℓ gяσυρ ℓєα∂єявσαя∂</b>\n\n┏━┅┅┄┄⟞⟦🌐⟧⟝┄┄┉┉━┓\n"
 
