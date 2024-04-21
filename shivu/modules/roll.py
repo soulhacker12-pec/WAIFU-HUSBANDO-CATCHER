@@ -16,8 +16,10 @@ r = redis.Redis(
     port=13192,
     password='wKgGC52NC9NRhic36fDIvWh76dngPvP9')
 
+
 def can_earn_reward(user_id):
     key = f'user:{user_id}'
+    key2 = f'user:{user_id}x'
     last_reward_time = r.get(key)
     if last_reward_time:
         cooldown_seconds = 60 - (time.time() - float(last_reward_time))
@@ -39,13 +41,13 @@ async def roll(update: Update, context: CallbackContext):
         if random.random() < 0.45:  # 45% chance
             await update.message.reply_text('Better luck next time!')
         else:
-            r.hincrby(key, 'charms', int(reward)) 
+            r.hincrby(key, 'charms', reward) 
             await update.message.reply_dice('🎲') 
             await update.message.reply_text(
                 f'<b>You rolled and earned {reward} charms!</b>',parse_mode='html', 
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🎲", callback_data=str(roll_result))]])
             )
-        r.setex(key, 60, time.time())  
+        r.setex(key2, 60, time.time()) 
     else:
         await update.message.reply_text(f'<b>Try again in {int(cooldown_seconds)} seconds.</b>',parse_mode='html')
 
