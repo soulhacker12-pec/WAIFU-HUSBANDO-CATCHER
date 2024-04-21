@@ -22,28 +22,26 @@ async def spin(update: Update, context: CallbackContext) -> None:
         if spin_count <= 0:
             await update.message.reply_text('Please enter a positive number for spins.')
             return
-        elif spin_count > 5000:
+        elif spin_count > 1000:
             await update.message.reply_text('You can only spin up to 1000 times.')
             return
 
-        # Check for sufficient charms
+        # Check if the user has sufficient charms for the spin
         user_id = update.effective_user.id
-        charms_needed = 50 * spin_count
-
-        # Explicitly check if there are enough charms
+        charms_needed = 1000 * spin_count
         sufficient_charms = await check_sufficient_charms(user_id, charms_needed)
+
         if not sufficient_charms:
             await update.message.reply_text('You do not have enough charms for this spin.')
-            return 
-        else:  
-            # At this point, we're certain the user has enough charms
-            all_waifus = await collection.find({}).to_list(length=None)
-            random.shuffle(all_waifus)
-            waifus = all_waifus[:spin_count]
+            return
 
-            if waifus:
-                await add_waifu_to_user(user_id, waifus)  # Add waifus to user
+        all_waifus = await collection.find({}).to_list(length=None)
+        random.shuffle(all_waifus)
+        waifus = all_waifus[:spin_count]
 
+        if waifus and sufficient_charms:
+            # Add the waifus obtained from spin to the user's collection
+            await add_waifu_to_user(user_id, waifus)
 
             reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n<b>˹✘˼ 𝐈𝐃</b>: {waifu["id"]}\n\n' for waifu in waifus])
             
@@ -58,14 +56,6 @@ async def spin(update: Update, context: CallbackContext) -> None:
             await update.message.reply_text('No waifus found.')
     except Exception as e:
         await update.message.reply_text(f'Error: {str(e)}')
-
-async def check_sufficient_charms(user_id, charms_needed):
-    user_info_key = f'user:{user_id}'
-    current_charms = r.hget(user_info_key, 'charm')
-    if current_charms:
-        current_charms = int(current_charms)
-        return current_charms >= charms_needed
-    return False
 
 async def add_waifu_to_user(user_id, waifus):
     user = await user_collection.find_one({'id': user_id})
@@ -86,6 +76,14 @@ async def deduct_charms(user_id, amount):
             # Handle if user doesn't have enough charms
             raise ValueError('Insufficient charms')
 
+
+async def check_sufficient_charms(user_id, charms_needed):
+    user_info_key = f'user:{user_id}'
+    current_charms = r.hget(user_info_key, 'charm')
+    if current_charms:
+        current_charms = int(current_charms)
+        return current_charms >= charms_needed
+    return False
 
 SPIN_HANDLER = CommandHandler('spin', spin, block=False)
 application.add_handler(SPIN_HANDLER)
