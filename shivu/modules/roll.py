@@ -38,7 +38,7 @@ async def roll(update: Update, context: CallbackContext):
         if random.random() < 0.45:  # 45% chance
             await update.message.reply_text('Better luck next time!')
         else:
-            r.hincrby(key, 'charms', +reward) 
+            r.hincrby(key, 'charms', reward) 
             await update.message.reply_dice('🎲') 
             await update.message.reply_text(
                 f'<b>You rolled and earned {reward} charms!</b>',parse_mode='html', 
