@@ -30,12 +30,13 @@ async def roll(update: Update, context: CallbackContext):
         roll_result = random.randint(1, 6)
         reward = random.randint(500, 2000)
         user_info_key = f'user:{user_id}'
-        
+        r.hset(user_info_key, 'charms', 25000)  # Initialize if the hash field doesn't exist
+     
         # 45% chance for "better luck next time" directly
         if random.random() < 0.45:  
             await update.message.reply_text('Better luck next time!')
         else:
-            r.hincrby(user_info_key, reward)  
+            r.hincrby(user_info_key, 'charms' , +reward)  
 
             # Stage 1: Send the rolling dice
             await update.message.reply_dice(emoji='🎲')  
@@ -52,14 +53,6 @@ async def roll(update: Update, context: CallbackContext):
         await update.message.reply_text('Please wait before rolling again for rewards.')
 
 
-async def button_callback(update: Update, context: CallbackContext):
-    query = update.callback_query
-    await query.answer() 
-
-    # Insert '/roll' into the user's message input
-    await query.message.edit_text(text='/roll') 
-
 # ... Your other bot setup code 
 
 application.add_handler(CommandHandler("rolal", roll))
-application.add_handler(CallbackQueryHandler(button_callback))
