@@ -6,7 +6,7 @@ import asyncio
 from html import escape 
 import html
 import locale
-from PIL import Pillow
+from PIL import *
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import Update
