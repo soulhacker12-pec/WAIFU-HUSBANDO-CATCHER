@@ -23,7 +23,7 @@ async def roll(update: Update, context: CallbackContext):
         reward = random.randint(500, 2000)
         user_info_key = f'user:{user_id}'
         r.setex(user_info_key, 60, time.time())
-        r.hincrby(user_info_key, +reward)
+        r.hincrby(user_info_key, reward)
 
 
         # Stage 1: Send the rolling dice
@@ -47,6 +47,14 @@ async def can_earn_reward(user_id):
     current_time = time.time()
     return current_time - last_reward_time >= 60  # 60 seconds cooldown
 
+async def button_callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    await query.answer() 
+
+    # Insert '/roll' into the user's message input
+    await query.message.edit_text(text='/roll') 
+
 # ... Your other bot setup code 
 
 application.add_handler(CommandHandler("rolal", roll))
+application.add_handler(CallbackQueryHandler(button_callback))
