@@ -145,7 +145,7 @@ async def send_image(update: Update, context: CallbackContext) -> None:
 
         # Open, resize, and add text 
         img = Image.open("temp_image.jpg")
-        img = img.resize((256, 512))
+        img = img.resize((512, 256))
 
         # Add text with Pillow ... (same as before)
 
