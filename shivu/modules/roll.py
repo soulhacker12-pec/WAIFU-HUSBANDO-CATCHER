@@ -2,7 +2,7 @@ import random
 import time
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext
-
+import asyncio
 from shivu import application 
 import redis
 
@@ -22,20 +22,20 @@ def roll(update: Update, context: CallbackContext):
         roll_result = random.randint(1, 6)
         reward = random.randint(500, 2000)
         user_info_key = f'user:{user_id}'
-        r.hincrby(user_info_key, reward)
+        await r.hincrby(user_info_key, reward)
 
 
         # Stage 1: Send the rolling dice
-        update.message.reply_dice(emoji='🎲')  
+        await update.message.reply_dice(emoji='🎲')  
 
         # Stage 2: Send the result and rewards
         keyboard = [[InlineKeyboardButton("🎲", callback_data=str(roll_result))]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text(f'You rolled and earned {reward} charms!', reply_markup=reply_markup)
+        await update.message.reply_text(f'You rolled and earned {reward} charms!', reply_markup=reply_markup)
 
         last_roll_reward[user_id] = time.time()
     else:
-        update.message.reply_text('Please wait before rolling again for rewards.')
+        await update.message.reply_text('Please wait before rolling again for rewards.')
 
 
 def can_earn_reward(user_id):
