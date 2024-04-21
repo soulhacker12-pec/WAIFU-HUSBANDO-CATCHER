@@ -55,4 +55,4 @@ async def roll(update: Update, context: CallbackContext):
 
 # ... Your other bot setup code 
 
-application.add_handler(CommandHandler("rolal", roll))
+application.add_handler(CommandHandler("roll", roll))
