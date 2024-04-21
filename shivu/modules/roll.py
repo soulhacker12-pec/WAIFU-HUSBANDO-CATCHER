@@ -23,14 +23,19 @@ def roll(update: Update, context: CallbackContext):
         user_info_key = f'user:{user_id}'
         r.hincrby(user_info_key, reward)
 
-        keyboard = [[InlineKeyboardButton("🎲", callback_data=str(roll_result))]]
-        reply_markup = InlineKeyboardMarkup(keyboard) 
 
+        # Stage 1: Send the rolling dice
+        update.message.reply_dice(emoji='🎲')  
+
+        # Stage 2: Send the result and rewards
+        keyboard = [[InlineKeyboardButton("🎲", callback_data=str(roll_result))]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_text(f'You rolled and earned {reward} charms!', reply_markup=reply_markup)
 
-        last_roll_reward[user_id] = time.time()  # Store the reward timestamp
+        last_roll_reward[user_id] = time.time()
     else:
         update.message.reply_text('Please wait before rolling again for rewards.')
+
 
 def can_earn_reward(user_id):
     if user_id not in last_roll_reward:
@@ -42,4 +47,4 @@ def can_earn_reward(user_id):
 
 # ... Your other bot setup code 
 
-application.add_handler(CommandHandler(("roll", roll))
+application.add_handler(CommandHandler("roll", roll))
