@@ -42,4 +42,4 @@ def can_earn_reward(user_id):
 
 # ... Your other bot setup code 
 
-application.add_handler(CommandHandler(("roll", roll, block="False"))
+application.add_handler(CommandHandler(("roll", roll))
