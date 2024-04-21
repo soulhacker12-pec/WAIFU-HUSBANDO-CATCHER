@@ -47,4 +47,4 @@ async def roll(update: Update, context: CallbackContext):
 
 
 
-application.add_handler(CommandHandler("roll", roll))
+application.add_handler(CommandHandler("l", roll))
