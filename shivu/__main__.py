@@ -105,21 +105,25 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
             
             message_counts[chat_id] = 0
             
+
+
 async def send_image(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
 
     all_characters = list(await collection.find({}).to_list(length=None))
-    filtered_characters = [c for c in all_characters if c['rarity'][0] not in unwanted_rarities] 
-
+    
     if chat_id not in sent_characters:
         sent_characters[chat_id] = []
 
-    if len(sent_characters[chat_id]) == len(filtered_characters):  # Check against the filtered list
+    if chat_id in zen_dict:
+        del zen_dict[chat_id]
+        
+
+    if len(sent_characters[chat_id]) == len(all_characters):
         sent_characters[chat_id] = []
 
-    character = random.choice(filtered_characters)
+    character = random.choice([c for c in all_characters if c['id'] not in sent_characters[chat_id]])
 
-    
     sent_characters[chat_id].append(character['id'])
     last_characters[chat_id] = character
     zen_dict[chat_id] = character['name'] 
@@ -131,8 +135,6 @@ async def send_image(update: Update, context: CallbackContext) -> None:
         photo=character['img_url'],
         caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc [ɴᴀᴍᴇ]***""",
         parse_mode='Markdown')
-
-
 
 async def guess(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
