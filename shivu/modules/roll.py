@@ -48,4 +48,4 @@ async def can_earn_reward(user_id):
 
 # ... Your other bot setup code 
 
-application.add_handler(CommandHandler("roll", roll))
+application.add_handler(CommandHandler("rolal", roll))
