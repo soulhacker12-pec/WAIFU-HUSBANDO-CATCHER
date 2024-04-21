@@ -18,7 +18,7 @@ r = redis.Redis(
 
 
 def can_earn_reward(user_id):
-    key = f'user:{user_id}'
+    user_info_key = f'user:{user_id}'
     key2 = f'user:{user_id}x'
     last_reward_time = r.get(key)
     if last_reward_time:
