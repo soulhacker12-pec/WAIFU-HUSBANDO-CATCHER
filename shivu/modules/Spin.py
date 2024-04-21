@@ -10,24 +10,6 @@ r = redis.Redis(
     port=13192,
     password='wKgGC52NC9NRhic36fDIvWh76dngPvP9')
 
-async def add_waifu_to_user(user_id, waifus):
-    user = await user_collection.find_one({'id': user_id})
-    if user:
-        await user_collection.update_one({'id': user_id}, {'$push': {'characters': {'$each': waifus}}})
-        await deduct_charms(user_id, 1000 * len(waifus))  # Deduct 250 charms for each waifu added
-    else:
-        await user_collection.insert_one({'id': user_id, 'characters': waifus})
-
-async def deduct_charms(user_id, amount):
-    user_info_key = f'user:{user_id}'
-    current_charms = r.hget(user_info_key, 'charm')
-    if current_charms:
-        current_charms = int(current_charms)
-        if current_charms >= amount:
-            r.hincrby(user_info_key, 'charm', -amount)  # Deduct the specified amount of charms
-        else:
-            # Handle if user doesn't have enough charms
-            raise ValueError('Insufficient charms')
 
 async def spin(update: Update, context: CallbackContext) -> None:
     try:
@@ -44,22 +26,24 @@ async def spin(update: Update, context: CallbackContext) -> None:
             await update.message.reply_text('You can only spin up to 1000 times.')
             return
 
-        # Check if the user has sufficient charms for the spin
+        # Check for sufficient charms
         user_id = update.effective_user.id
         charms_needed = 50 * spin_count
-        sufficient_charms = await check_sufficient_charms(user_id, charms_needed)
 
+        # Explicitly check if there are enough charms
+        sufficient_charms = await check_sufficient_charms(user_id, charms_needed)
         if not sufficient_charms:
             await update.message.reply_text('You do not have enough charms for this spin.')
-            return
+            return 
+        else:  
+            # At this point, we're certain the user has enough charms
+            all_waifus = await collection.find({}).to_list(length=None)
+            random.shuffle(all_waifus)
+            waifus = all_waifus[:spin_count]
 
-        all_waifus = await collection.find({}).to_list(length=None)
-        random.shuffle(all_waifus)
-        waifus = all_waifus[:spin_count]
+            if waifus:
+                await add_waifu_to_user(user_id, waifus)  # Add waifus to user
 
-        if waifus:
-            # Add the waifus obtained from spin to the user's collection
-            await add_waifu_to_user(user_id, waifus)
 
             reply_message = "\n".join([f'˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["name"]}</code>\n˹✘˼ <b>ᴀɴɪᴍᴇ</b>: <code>{waifu["anime"]}</code>\n˹✘˼ <b>ʀᴀʀɪᴛʏ</b> <code>{waifu["rarity"]}</code>\n<b>˹✘˼ 𝐈𝐃</b>: {waifu["id"]}\n\n' for waifu in waifus])
             
@@ -82,6 +66,26 @@ async def check_sufficient_charms(user_id, charms_needed):
         current_charms = int(current_charms)
         return current_charms >= charms_needed
     return False
+
+async def add_waifu_to_user(user_id, waifus):
+    user = await user_collection.find_one({'id': user_id})
+    if user:
+        await user_collection.update_one({'id': user_id}, {'$push': {'characters': {'$each': waifus}}})
+        await deduct_charms(user_id, 1000 * len(waifus))  # Deduct 250 charms for each waifu added
+    else:
+        await user_collection.insert_one({'id': user_id, 'characters': waifus})
+
+async def deduct_charms(user_id, amount):
+    user_info_key = f'user:{user_id}'
+    current_charms = r.hget(user_info_key, 'charm')
+    if current_charms:
+        current_charms = int(current_charms)
+        if current_charms >= amount:
+            r.hincrby(user_info_key, 'charm', -amount)  # Deduct the specified amount of charms
+        else:
+            # Handle if user doesn't have enough charms
+            raise ValueError('Insufficient charms')
+
 
 SPIN_HANDLER = CommandHandler('spin', spin, block=False)
 application.add_handler(SPIN_HANDLER)
