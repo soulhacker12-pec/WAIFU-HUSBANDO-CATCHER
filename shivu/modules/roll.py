@@ -4,6 +4,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackContext
 
 from shivu import application 
+import redis
 
 # Cooldown Tracking (in-memory for demonstration)
 last_roll_reward = {}  # {user_id: timestamp}
