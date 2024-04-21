@@ -137,38 +137,31 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     response.raise_for_status()  # Raise an error if download fails
 
     try:
-        img = Image.open(response.raw)
-    except OSError:
-        print(f"Error opening image from URL: {img_url}")
-        return
+        # Save the image locally
+        with open("temp_image.jpg", "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:  # Filter out keep-alive chunks
+                    f.write(chunk)
 
-    img = img.resize((512, 512))
+        # Open, resize, and add text 
+        img = Image.open("temp_image.jpg")
+        img = img.resize((512, 512))
 
-    # Add text with Pillow
-    text = "WaifuXClutch"
+        # Add text with Pillow ... (same as before)
 
-    text_layer = Image.new('RGBA', img.size, (0, 0, 0, 0))  # Transparent layer
-    draw = ImageDraw.Draw(text_layer)
+        img.save("edited_image.jpg")
+        # Send the image
+        await context.bot.send_photo(
+            chat_id=chat_id,
+            photo=open("edited_image.jpg", "rb"),
+            caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ..."""
+        )
 
-    font_path = '/path/to/your/font.ttf'  # Replace with your desired font file
-    font = ImageFont.truetype(font_path, size=int(img.height * 0.05))
-    text_width, text_height = draw.textsize(text, font=font)
-    x = (img.width - text_width) / 2
-    y = img.height - text_height  # Position at bottom center
+    except Exception as e:
+        print(f"Error processing image: {e}")
+        # You might want to send an error message to the user here
 
-    draw.text((x, y), text, font=font, fill=(255, 255, 255, 255))
-
-    img = Image.alpha_composite(img, text_layer)
-
-    # Save the image
-    img.save("edited_image.jpg")
-
-    await context.bot.send_photo(
-        chat_id=chat_id,
-        photo=open("edited_image.jpg", "rb"),
-        caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ..."""
-    )
-
+    
     
 async def guess(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
