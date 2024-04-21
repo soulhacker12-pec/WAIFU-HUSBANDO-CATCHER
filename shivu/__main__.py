@@ -6,7 +6,7 @@ import asyncio
 from html import escape 
 import html
 import locale
-
+from PIL import Pillow
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import Update
@@ -130,12 +130,17 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     if chat_id in first_correct_guesses:
         del first_correct_guesses[chat_id]
 
+    img = Image.open(character['img_url'])  # Load with Pillow
+    img = img.resize((512, 512))             # Resize to 512x512
+    # Temporary save (you might want a better way than saving to disk)
+    img.save("resized_image.jpg") 
+
     await context.bot.send_photo(
         chat_id=chat_id,
-        photo=character['img_url'],
-        caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc [ɴᴀᴍᴇ]***""",
-        parse_mode='Markdown')
-
+        photo=open("resized_image.jpg", "rb"),  # Send resized image
+        caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ..."""
+    )
+    
 async def guess(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
