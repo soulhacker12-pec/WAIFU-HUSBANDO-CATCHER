@@ -154,7 +154,7 @@ async def send_image(update: Update, context: CallbackContext) -> None:
         await context.bot.send_photo(
             chat_id=chat_id,
             photo=open("edited_image.jpg", "rb"),
-            caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc [ɴᴀᴍᴇ]"""
+            caption=f"""ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc [ɴᴀᴍᴇ]"""
         )
 
     except Exception as e:
