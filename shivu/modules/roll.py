@@ -15,7 +15,7 @@ r = redis.Redis(
     port=13192,
     password='wKgGC52NC9NRhic36fDIvWh76dngPvP9')
 
-def roll(update: Update, context: CallbackContext):
+async def roll(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
 
     if can_earn_reward(user_id):
@@ -38,7 +38,7 @@ def roll(update: Update, context: CallbackContext):
         await update.message.reply_text('Please wait before rolling again for rewards.')
 
 
-def can_earn_reward(user_id):
+async def can_earn_reward(user_id):
     if user_id not in last_roll_reward:
         return True  # First roll is allowed
 
