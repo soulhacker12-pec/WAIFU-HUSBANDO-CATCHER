@@ -20,7 +20,7 @@ r = redis.Redis(
 def can_earn_reward(user_id):
     user_info_key = f'user:{user_id}'
     key2 = f'user:{user_id}x'
-    last_reward_time = r.get(key)
+    last_reward_time = r.get(key2)
     if last_reward_time:
         cooldown_seconds = 60 - (time.time() - float(last_reward_time))
         return False, cooldown_seconds
@@ -34,15 +34,15 @@ async def roll(update: Update, context: CallbackContext):
     if ready:
         roll_result = random.randint(1, 6)
         reward = random.randint(500, 2000)
-        key = f'user:{user_id}'
-        if not r.exists(key): 
+        user_info_key = f'user:{user_id}'
+        if not r.exists(user_info_key): 
           r.hset(key, 'charm', 50000)
          # Initialize if needed 
         
         if random.random() < 0.45:  # 45% chance
             await update.message.reply_text('Better luck next time!')
         else:
-            r.hincrby(key, 'charm', reward)
+            r.hincrby(user_info_key, 'charm', reward)
             await update.message.reply_dice('🎲') 
             await update.message.reply_text(
                 f'<b>You rolled and earned {reward} charms!</b>',parse_mode='html', 
