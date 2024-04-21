@@ -31,12 +31,12 @@ async def roll(update: Update, context: CallbackContext):
     user_info_key = f'user:{user_id}'
 
     if not r.exists(user_info_key): 
-        r.hset(user_info_key, 'charms', 50000)  # Initialize if needed 
+        r.hset(user_info_key, 'charm', 50000)  # Initialize if needed 
     
     if random.random() < 0.45:  # 45% chance
         await update.message.reply_text('Better luck next time!')
     else:
-        r.hincrby(user_info_key, 'charms', reward)
+        r.hincrby(user_info_key, 'charm', reward)
         await update.message.reply_dice('🎲') 
         await update.message.reply_text(
             f'You rolled and earned {reward} charms!',parse_mode='html', 
