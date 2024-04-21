@@ -39,7 +39,7 @@ async def roll(update: Update, context: CallbackContext):
         r.hincrby(user_info_key, 'charms', reward)
         await update.message.reply_dice('🎲') 
         await update.message.reply_text(
-            f'<b>You rolled and earned {reward} charms!</b>',parse_mode='html', 
+            f'You rolled and earned {reward} charms!',parse_mode='html', 
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🎲", callback_data=str(roll_result))]])
         )
 
