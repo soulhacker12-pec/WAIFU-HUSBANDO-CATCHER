@@ -35,8 +35,7 @@ async def roll(update: Update, context: CallbackContext):
         roll_result = random.randint(1, 6)
         reward = random.randint(500, 2000)
         key = f'user:{user_id}'
-        if not r.exists(key): 
-          r.hset(key, 'charms', 50000)  # Initialize if needed 
+         # Initialize if needed 
         
         if random.random() < 0.45:  # 45% chance
             await update.message.reply_text('Better luck next time!')
