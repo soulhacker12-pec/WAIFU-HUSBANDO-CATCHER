@@ -6,7 +6,8 @@ import asyncio
 from html import escape 
 import html
 import locale
-from PIL import Image
+import requests  # Added for downloading images
+from PIL import Image, ImageDraw, ImageFont
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import Update
@@ -130,16 +131,44 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     if chat_id in first_correct_guesses:
         del first_correct_guesses[chat_id]
 
-    img = Image.open(character['img_url'])  # Load with Pillow
-    img = img.resize((512, 512))             # Resize to 512x512
-    # Temporary save (you might want a better way than saving to disk)
-    img.save("resized_image.jpg") 
+    img_url = character['img_url']
+
+    response = requests.get(img_url, stream=True)
+    response.raise_for_status()  # Raise an error if download fails
+
+    try:
+        img = Image.open(response.raw)
+    except OSError:
+        print(f"Error opening image from URL: {img_url}")
+        return
+
+    img = img.resize((512, 512))
+
+    # Add text with Pillow
+    text = "WaifuXClutch"
+
+    text_layer = Image.new('RGBA', img.size, (0, 0, 0, 0))  # Transparent layer
+    draw = ImageDraw.Draw(text_layer)
+
+    font_path = '/path/to/your/font.ttf'  # Replace with your desired font file
+    font = ImageFont.truetype(font_path, size=int(img.height * 0.05))
+    text_width, text_height = draw.textsize(text, font=font)
+    x = (img.width - text_width) / 2
+    y = img.height - text_height  # Position at bottom center
+
+    draw.text((x, y), text, font=font, fill=(255, 255, 255, 255))
+
+    img = Image.alpha_composite(img, text_layer)
+
+    # Save the image
+    img.save("edited_image.jpg")
 
     await context.bot.send_photo(
         chat_id=chat_id,
-        photo=open("resized_image.jpg", "rb"),  # Send resized image
+        photo=open("edited_image.jpg", "rb"),
         caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ..."""
     )
+
     
 async def guess(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
