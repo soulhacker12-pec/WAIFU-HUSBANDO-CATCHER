@@ -58,13 +58,13 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         if chat_frequency:
             message_frequency = chat_frequency.get('message_frequency', 100)
         else:
-            message_frequency = 30
+            message_frequency = 25
 
         # Check if the message is sent in the specified group ID
         if chat_id ==  6783092268:
-            r.hincrby(f'user:{user_id}', 'charm', 100)
+            r.hincrby(f'user:{user_id}', 'charm', 0)
         else:
-            r.hincrby(f'user:{user_id}', 'charm', 10)
+            r.hincrby(f'user:{user_id}', 'charm', 0)
         
         if chat_id in last_user and last_user[chat_id]['user_id'] == user_id:
             last_user[chat_id]['count'] += 1
@@ -135,8 +135,8 @@ async def guess(update: Update, context: CallbackContext) -> None:
 
     user_info_key = f'user:{user_id}'
     if not r.exists(user_info_key):
-        r.hincrby(user_info_key, 'charm', 10000)
-        await update.message.reply_text('<b>You claimed <code>10000 </code>Charms</b>.', parse_mode='html')
+        r.hincrby(user_info_key, 'charm', 25000)
+        await update.message.reply_text('<b>You claimed <code>25000 </code>Charms</b>.', parse_mode='html')
 
     guess = ' '.join(context.args).lower() if context.args else ''
     
@@ -255,7 +255,6 @@ async def store_character(update: Update, context: CallbackContext) -> None:
     chat_id = update.effective_chat.id
 
     if chat_id not in zen_dict:
-        await update.message.reply_text('No character has spawned in this channel yet.')
         return
 
     character_name = zen_dict[chat_id]  # Retrieve the stored name
