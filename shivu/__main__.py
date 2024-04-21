@@ -131,11 +131,13 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     if chat_id in first_correct_guesses:
         del first_correct_guesses[chat_id]
 
+
     img_url = character['img_url']
     response = requests.get(img_url, stream=True)
     response.raise_for_status()
 
     try:
+        
         # Save, Load, Resize
         with open("temp_image.jpg", "wb") as f:
             for chunk in response.iter_content(chunk_size=1024):
