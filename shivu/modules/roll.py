@@ -22,7 +22,7 @@ async def roll(update: Update, context: CallbackContext):
         roll_result = random.randint(1, 6)
         reward = random.randint(500, 2000)
         user_info_key = f'user:{user_id}'
-        await r.hincrby(user_info_key, reward)
+        r.hincrby(user_info_key, reward)
 
 
         # Stage 1: Send the rolling dice
