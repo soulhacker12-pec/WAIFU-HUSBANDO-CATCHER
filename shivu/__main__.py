@@ -132,23 +132,36 @@ async def send_image(update: Update, context: CallbackContext) -> None:
         del first_correct_guesses[chat_id]
 
     img_url = character['img_url']
-
     response = requests.get(img_url, stream=True)
-    response.raise_for_status()  # Raise an error if download fails
+    response.raise_for_status()
 
     try:
-        # Save the image locally
+        # Save, Load, Resize
         with open("temp_image.jpg", "wb") as f:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:  # Filter out keep-alive chunks
                     f.write(chunk)
 
-        # Open, resize, and add text 
-        
+        img = Image.open("temp_image.jpg")
 
-        # Add text with Pillow ... (same as before)
+        # Add text with Pillow 
+        text_layer = Image.new('RGBA', img.size, (0, 0, 0, 0))  # Transparent layer
+        draw = ImageDraw.Draw(text_layer)
+
+        font_path = '/path/to/your/font.ttf'  
+        font_size = int(img.height * 0.1)  # Size 10% of image height
+        font = ImageFont.truetype(font_path, size=font_size) 
+        text = "WaifuXClutch"
+        text_width, text_height = draw.textsize(text, font=font)
+        x = (img.width - text_width) / 2
+        y = img.height - text_height  # Position at bottom center
+
+        draw.text((x, y), text, font=font, fill=(255, 255, 255, 255))  # White, solid
+
+        img = Image.alpha_composite(img, text_layer)
 
         img.save("edited_image.jpg")
+
         # Send the image
         await context.bot.send_photo(
             chat_id=chat_id,
@@ -158,7 +171,6 @@ async def send_image(update: Update, context: CallbackContext) -> None:
 
     except Exception as e:
         print(f"Error processing image: {e}")
-        # You might want to send an error message to the user here
 
     
     
