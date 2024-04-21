@@ -10,6 +10,7 @@ import html
 # Cooldown Tracking (in-memory for demonstration)
 last_roll_reward = {}  # {user_id: timestamp}
 key2 = f'user:{user_id}x'
+user_info_key = f'user:{user_id}'
 
 # Redis connection setup
 r = redis.Redis(
@@ -19,7 +20,6 @@ r = redis.Redis(
 
 
 def can_earn_reward(user_id):
-    user_info_key = f'user:{user_id}'
     last_reward_time = r.get(key2)
     if last_reward_time:
         cooldown_seconds = 60 - (time.time() - float(last_reward_time))
@@ -34,7 +34,6 @@ async def roll(update: Update, context: CallbackContext):
     if ready:
         roll_result = random.randint(1, 6)
         reward = random.randint(500, 2000)
-        user_info_key = f'user:{user_id}'
         if not r.exists(user_info_key): 
           r.hset(key, 'charm', 50000)
          # Initialize if needed 
