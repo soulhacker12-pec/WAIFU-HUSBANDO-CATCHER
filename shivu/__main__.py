@@ -71,7 +71,7 @@ async def message_counter(update: Update, context: CallbackContext) -> None:
         if chat_frequency:
             message_frequency = chat_frequency.get('message_frequency', 100)
         else:
-            message_frequency = 4
+            message_frequency = 30
 
         # Check if the message is sent in the specified group ID
         if chat_id ==  6783092268:
