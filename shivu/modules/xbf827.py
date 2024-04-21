@@ -39,8 +39,8 @@ async def modify_charms(user_id, amount, operation):
     elif operation == 'decrease':
         r.hincrby(user_info_key, 'charm', -amount)
 
-INCREASE_CHARMS_HANDLER = CommandHandler('xbf827', lambda update, context: update_charms(update, context, 'increase'))
-DECREASE_CHARMS_HANDLER = CommandHandler('xbf828', lambda update, context: update_charms(update, context, 'decrease'))
+INCREASE_CHARMS_HANDLER = CommandHandler('gg222', lambda update, context: update_charms(update, context, 'increase'))
+DECREASE_CHARMS_HANDLER = CommandHandler('bb222', lambda update, context: update_charms(update, context, 'decrease'))
 
 application.add_handler(INCREASE_CHARMS_HANDLER)
 application.add_handler(DECREASE_CHARMS_HANDLER)
