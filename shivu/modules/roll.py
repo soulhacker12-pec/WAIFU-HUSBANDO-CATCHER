@@ -9,6 +9,7 @@ import html
 
 # Cooldown Tracking (in-memory for demonstration)
 last_roll_reward = {}  # {user_id: timestamp}
+key2 = f'user:{user_id}x'
 
 # Redis connection setup
 r = redis.Redis(
@@ -19,7 +20,6 @@ r = redis.Redis(
 
 def can_earn_reward(user_id):
     user_info_key = f'user:{user_id}'
-    key2 = f'user:{user_id}x'
     last_reward_time = r.get(key2)
     if last_reward_time:
         cooldown_seconds = 60 - (time.time() - float(last_reward_time))
