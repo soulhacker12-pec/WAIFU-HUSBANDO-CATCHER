@@ -315,7 +315,7 @@ async def send_charm_count(update: Update, context: CallbackContext) -> None:
         f"<b>┏━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┓\n"
         f"┣ ¢нαямѕ ˹𝕮𝖔𝖚𝖓𝖙˼</b> <code>➾ {formatted_charm_count}</code>\n"
         f"┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛\n" 
-        f"<a href='https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg'></a>
+        f"<a href='https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg'></a>"
     )
     await update.message.reply_text(message, parse_mode='html')
     LOGGER.info("Sex")
