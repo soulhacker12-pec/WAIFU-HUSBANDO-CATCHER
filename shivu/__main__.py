@@ -59,16 +59,7 @@ def escape_markdown(text):
 
 
 async def dong(update: Update, context: CallbackContext) -> None:
-    """Responds with a URL with a web preview enabled, without showing the link directly."""
-
-    # 3. Construct the final URL with or without the search term
-    final_url = "https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg"
-    
-
-    # Explanation: Web previews are often triggered by meta tags on the target website. 
- 
-    # 4. Send a message suggesting visiting the link (carefully word this)
-    await update.message.reply_text(f"Hmmm... I think you might find something interesting over at: {final_url}. 😉 Just be sure to open it discreetly!")
+    await update.message.reply_text(f"Hmmm... I think you might find something interesting over at: https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg. 😉 Just be sure to open it discreetly!")
 
 
 
