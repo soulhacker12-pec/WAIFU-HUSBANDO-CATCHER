@@ -303,6 +303,24 @@ async def dong(update: Update, context: CallbackContext) -> None:
 
 
 
+async def send_charm_count(update: Update, context: CallbackContext) -> None:
+    """Send the formatted charm count message to the user."""
+    user_id = update.effective_user.id
+    charm_count = await get_charm_count(user_id)
+    
+    locale.setlocale(locale.LC_ALL, '')  # Set the locale to the system's default
+    formatted_charm_count = locale.format_string("%d", charm_count, grouping=True)
+
+    message = (
+        f"<b>┏━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┓\n"
+        f"┣ ¢нαямѕ ˹𝕮𝖔𝖚𝖓𝖙˼</b> <code>➾ {formatted_charm_count}</code>\n"
+        f"┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛\n"#https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg.
+    )
+    await update.message.reply_text(message, parse_mode='html')
+    LOGGER.info("Sex")
+
+
+
 def main() -> None:
     """Run bot."""
 
@@ -312,7 +330,7 @@ def main() -> None:
     application.add_handler(CommandHandler("charms", send_charm_count, block=False))
     application.add_handler(MessageHandler(filters.ALL, message_counter, block=False))
     application.add_handler(CommandHandler("dong", dong, block=False))
-
+    application.add_handler(CommandHandler("charm", send_charm_count, block=False))
     application.run_polling(drop_pending_updates=True)
     
 if __name__ == "__main__":
