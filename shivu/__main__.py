@@ -11,6 +11,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram import Update
 from telegram.ext import CommandHandler, CallbackContext, MessageHandler, filters
+from telegram import *
 
 from shivu import collection, top_global_groups_collection, group_user_totals_collection, user_collection, user_totals_collection, shivuu
 from shivu import application, SUPPORT_CHAT, UPDATE_CHAT, db, LOGGER
@@ -317,7 +318,7 @@ async def send_charm_count(update: Update, context: CallbackContext) -> None:
         f"┗━┅┅┄┄⟞⟦🎐⟧⟝┄┄┉┉━┛\n" 
         f"<a href='https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg'></a>"
     )
-    await update.message.reply_text(message, parse_mode='html')
+    await update.message.reply_text(message, parse_mode=telegram.ParseMode.HTML)
     LOGGER.info("Sex")
 
 
