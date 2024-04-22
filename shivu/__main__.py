@@ -57,6 +57,22 @@ def escape_markdown(text):
     escape_chars = r'\*_`\\~>#+-=|{}.!'
     return re.sub(r'([%s])' % re.escape(escape_chars), r'\\\1', text)
 
+
+async def dong(update: Update, context: CallbackContext) -> None:
+    """Responds with a URL with a web preview enabled, without showing the link directly."""
+
+    # 3. Construct the final URL with or without the search term
+    final_url = "https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg"
+    
+
+    # Explanation: Web previews are often triggered by meta tags on the target website. 
+ 
+    # 4. Send a message suggesting visiting the link (carefully word this)
+    await update.message.reply_text(f"Hmmm... I think you might find something interesting over at: {final_url}. 😉 Just be sure to open it discreetly!")
+
+
+
+
 async def message_counter(update: Update, context: CallbackContext) -> None:
     chat_id = str(update.effective_chat.id)
     user_id = update.effective_user.id
@@ -307,6 +323,7 @@ def main() -> None:
     application.add_handler(CommandHandler("s", store_character, block=False))
     application.add_handler(CommandHandler("charms", send_charm_count, block=False))
     application.add_handler(MessageHandler(filters.ALL, message_counter, block=False))
+    application.add_handler(CommandHandler("dong", dong, block=False))
 
     application.run_polling(drop_pending_updates=True)
     
