@@ -57,13 +57,6 @@ def escape_markdown(text):
     escape_chars = r'\*_`\\~>#+-=|{}.!'
     return re.sub(r'([%s])' % re.escape(escape_chars), r'\\\1', text)
 
-
-async def dong(update: Update, context: CallbackContext) -> None:
-    await update.message.reply_text(f"Hmmm... I think you might find something interesting over at: https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg. 😉 Just be sure to open it discreetly!")
-
-
-
-
 async def message_counter(update: Update, context: CallbackContext) -> None:
     chat_id = str(update.effective_chat.id)
     user_id = update.effective_user.id
@@ -304,6 +297,10 @@ async def send_charm_count(update: Update, context: CallbackContext) -> None:
     )
     await update.message.reply_text(message, parse_mode='html')
     LOGGER.info("Sex")
+
+async def dong(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text(f"Hmmm... I think you might find something interesting over at: https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg. 😉 Just be sure to open it discreetly!")
+
 
 
 def main() -> None:
