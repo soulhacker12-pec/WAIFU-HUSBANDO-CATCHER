@@ -304,20 +304,15 @@ async def dong(update: Update, context: CallbackContext) -> None:
 
 
 async def sss(update, context):
-    # URL to be displayed in the preview
+    # URL to be displayed without being parsed as a link
     url = "https://telegra.ph/file/9984fc1ee8bfe50d4ff30.jpg"
     
-    # Message with the URL preview
-    message_with_preview = f"Preview of the link: {url}"
+    # Message with the escaped URL
+    escaped_url = '\u200B'.join(url)  # Insert zero-width characters between each character in the URL
+    message = f"Here is the URL: {escaped_url}"
     
-    # Send the message with the URL preview and disable notification
-    message = await update.message.reply_text(message_with_preview, disable_notification=True)
-    
-    # Edit the message to remove the URL
-    await context.bot.edit_message_text(chat_id=update.effective_chat.id,
-                                        message_id=message.message_id,
-                                        text="Preview of the link")
-
+    # Send the message with the escaped URL
+    await update.message.reply_text(message)
 
 
 def main() -> None:
