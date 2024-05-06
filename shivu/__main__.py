@@ -134,7 +134,8 @@ async def send_image(update: Update, context: CallbackContext) -> None:
     await context.bot.send_photo(
         chat_id=chat_id,
         photo=character['img_url'],
-        caption=f"""***ᴀ {character['rarity'][0]} ᴡᴀɪғᴜ ʜᴀs ᴊᴜsᴛ sᴘᴀᴡɴᴇᴅ ɪɴ ᴛʜᴇ ᴄʜᴀᴛ!🧃ᴀᴅᴅ ᴛʜɪs ᴄʜᴀʀᴀᴄᴛᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ ᴜsɪɴɢ /protecc [ɴᴀᴍᴇ]***""",
+        caption=f"""A New {character['rarity']}  ᴡᴀɪғᴜ ʜᴀs ᴀᴘᴘᴇᴀʀᴇᴅ!
+ǫᴜɪᴄᴋ! ᴜsᴇ..../grab ɴᴀᴍᴇ ᴛᴏ ᴀᴅᴅ ʜᴇʀ ᴛᴏ ʏᴏᴜʀ ʜᴀʀᴇᴍ!""",
         parse_mode='Markdown')
 
 async def guess(update: Update, context: CallbackContext) -> None:
